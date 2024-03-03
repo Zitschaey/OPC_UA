@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1.0">
+  <zoom_level>5</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>250</x>
+      <y>345</y>
+      <w>215</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>MySensor
+--
+browseName: String
+nodeId: int
+station: MyStation
+--
++ MySensor(browseName: String, nodeId: int)
++ MySensor()
++ createSensorObjectsFromFile(filePath: String): List&lt;MySensor&gt;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>250</x>
+      <y>185</y>
+      <w>220</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>MyStation
+--
+stationName: String
+station: Station
+stationsId: int
+anlage: Anlage
+alarms: ArrayList&lt;Alarm&gt;
+sensors: ArrayList&lt;MySensor&gt;
+--
++ MyStation(stationName: String, station: Station, stationsId: int,
+anlage: Anlage, alarms: ArrayList&lt;Alarm&gt;,
+sensors: ArrayList&lt;MySensor&gt;)
++ MyStation(stationName: String, station: Station, anlage: Anlage)
++ addSensor(sensor: MySensor): void
++ addAlarm(alarm: Alarm): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>560</x>
+      <y>185</y>
+      <w>145</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>Anlage
+--
+stations: ArrayList&lt;MyStation&gt;
+orders: ArrayList&lt;Order&gt;
+name: String
+status: String
+aktuelleProduktionsrate: double
+--
++ Anlage(name: String)
++ addStation(station: MyStation): void
++ addOrder(order: Order): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>40</x>
+      <y>185</y>
+      <w>105</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Alarm
+--
+dauer: long
+datum: Date
+fehlermeldung: String
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>465</x>
+      <y>25</y>
+      <w>230</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>Order
+--
+anzahlKugel: int[]
+deckelFarbe: String
+orderId: int
+status: String
+time: long
+anlage: Anlage
+--
++ Order(anzahlKugel: int[], deckelFarbe: String, anlage: Anlage)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>465</x>
+      <y>220</y>
+      <w>105</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>295</x>
+      <y>300</y>
+      <w>20</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>220</y>
+      <w>120</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>220.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>605</x>
+      <y>110</y>
+      <w>20</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>0</x>
+      <y>0</y>
+      <w>95</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>10</x>
+      <y>10</y>
+      <w>95</w>
+      <h>15</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+</diagram>
