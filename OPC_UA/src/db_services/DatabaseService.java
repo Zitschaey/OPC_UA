@@ -70,13 +70,30 @@ public class DatabaseService {
                 statement.setInt(1, highestID);
                 statement.setInt(2, station.getStationID());
                 statement.setInt(3, rawList.get(index).getSensorId());
-                statement.setTimestamp(4, null);
+                statement.setInt(4, insertDataValue(connection, data));
                 statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
                 statement.setString(6, data);
                 statement.executeUpdate();
                 index++;
             }
         }
+    }
+
+    public static int insertDataValue(Connection connection, String rawValue) throws SQLException {
+        String insertSql = "INSERT INTO datavalue (ValueID, Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?, ?)";
+
+        int maxValueID;
+        try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
+
+            maxValueID = getHighestDatavalueID(connection);
+            statement.setInt(1, maxValueID); // Verwende die Methode, um die nächste verfügbare ID zu erhalten
+            statement.setString(2, rawValue);
+            statement.setString(3, null);
+            statement.setBoolean(4, true);
+            statement.executeUpdate();
+
+        }
+        return maxValueID;
     }
 
 
@@ -86,6 +103,20 @@ public class DatabaseService {
              ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 return resultSet.getInt("MaxCrawlerID");
+            } else {
+                // If there are no records in the table yet
+                return 0;
+            }
+        }
+    }
+
+
+    private static int getHighestDatavalueID(Connection connection) throws SQLException {
+        String sql = "SELECT MAX(ValueID) AS MaxValueID FROM datavalue";
+        try (PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt("MaxValueID") + 1;
             } else {
                 // If there are no records in the table yet
                 return 0;
