@@ -12,6 +12,13 @@ public class MySensor {
 	private String browseName;
 	private int nodeId;
 	private MyStation station;
+	private int sensorId;
+	
+    public MySensor(String browseName, int nodeId, MyStation station) {
+        this.browseName = browseName;
+        this.nodeId = nodeId;
+        this.station = station;
+    }
 	
 	    public MySensor(String browseName, int nodeId) {
 	        this.browseName = browseName;
@@ -71,6 +78,16 @@ public class MySensor {
 	public void setStation(MyStation station) {
 		this.station = station;
 	}
+
+	public int getSensorId() {
+		return sensorId;
+	}
+
+	public void setSensorId(int sensorId) {
+		this.sensorId = sensorId;
+	}
+	
+	
 	
 
 	

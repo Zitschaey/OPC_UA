@@ -6,17 +6,23 @@ import de.judge.opc_ets.Station;
 
 public class MyStation {
 
-	private String stationName;
+	private String bezeichnung;
 	private Station station;
 	private int stationsId;
 	private Anlage anlage;
 	private ArrayList<Alarm> alarms;
 	private ArrayList<MySensor> sensors;
 
+	public MyStation(String bezeichnung) {
+		super();
+		this.bezeichnung = bezeichnung;
+
+	}
+
 	public MyStation(String stationName, Station station, int stationsId, Anlage anlage, ArrayList<Alarm> alarms,
 			ArrayList<MySensor> sensors) {
 		super();
-		this.stationName = stationName;
+		this.bezeichnung = stationName;
 		this.station = station;
 		this.stationsId = stationsId;
 		this.anlage = anlage;
@@ -26,17 +32,17 @@ public class MyStation {
 
 	public MyStation(String stationName, Station station, Anlage anlage) {
 		super();
-		this.stationName = stationName;
+		this.bezeichnung = stationName;
 		this.anlage = anlage;
 		this.station = station;
 	}
 
 	public String getStationName() {
-		return stationName;
+		return bezeichnung;
 	}
 
 	public void setStationName(String stationName) {
-		this.stationName = stationName;
+		this.bezeichnung = stationName;
 	}
 
 	public int getStationsId() {
