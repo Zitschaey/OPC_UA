@@ -41,4 +41,16 @@ for (MySensor sensorObj : sensorObjects) {
 return list;
 }
 
+
+
+public static SensorList createSensorListForOne(int id) throws SQLException {
+List<MySensor> sensorObjects = DatabaseService.getSensorById(id);
+SensorList list = new SensorList();
+
+for (MySensor sensorObj : sensorObjects) {
+	list.addSensor(sensorObj.getNodeId(), sensorObj.getBrowseName());
+}
+return list;
+}
+
 }
