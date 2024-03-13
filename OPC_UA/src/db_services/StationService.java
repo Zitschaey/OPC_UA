@@ -14,7 +14,7 @@ public class StationService {
 
 public static void createConnection(Stationen station) throws Exception {
 	
-	SensorList sensorlist = createSensorList(station.getStationID());
+	SensorList sensorlist = createSensorList(station);
 	OPCClientETS.getInstance().connectToMachine(station.getStation());
 	OPCClientETS.getInstance().setCrawlOffset(1000);
 	OPCClientETS.getInstance().browseOPCServer(sensorlist);
@@ -31,8 +31,8 @@ public static void createConnection(Stationen station) throws Exception {
 	OPCClientETS.getInstance().disconnect();
 }
 
-public static SensorList createSensorList(int stationId) throws SQLException {
-List<MySensor> sensorObjects = DatabaseService.getSensorByStation(stationId);
+public static SensorList createSensorList(Stationen station) throws SQLException {
+List<MySensor> sensorObjects = DatabaseService.getSensorByStation(station);
 SensorList list = new SensorList();
 
 for (MySensor sensorObj : sensorObjects) {

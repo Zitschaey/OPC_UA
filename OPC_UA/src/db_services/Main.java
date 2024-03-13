@@ -4,13 +4,8 @@ import enums.Stationen;
 public class Main {
 	public static void main(String[] args) throws Exception {
 	
-	DatabaseService.inserDataCrawler(Stationen.PR);
-		
-		
-		
-		
-		
-		
+	DatabaseService.inserDataCrawler(Stationen.RI);
+	
 	}
 
 }
