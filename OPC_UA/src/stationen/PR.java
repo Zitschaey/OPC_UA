@@ -20,7 +20,7 @@ import models.MySensor;
 import models.MyStation;
 import services.StationService;
 
-public class PR extends MyStation{
+public class PR extends MyStation {
 	public PR() throws SQLException {
 		super(Stationen.PR, Stationen.PR.getStation().getID(), StationService.createSensorList(Stationen.PR));
 	}

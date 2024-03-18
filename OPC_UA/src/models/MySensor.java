@@ -13,58 +13,57 @@ public class MySensor {
 	private int nodeId;
 	private MyStation station;
 	private int sensorId;
-	
-    public MySensor(String browseName, int nodeId, MyStation station) {
-        this.browseName = browseName;
-        this.nodeId = nodeId;
-        this.station = station;
-    }
-	
-	    public MySensor(String browseName, int nodeId) {
-	        this.browseName = browseName;
-	        this.nodeId = nodeId;
-	    }
-	    
-	    public MySensor() {
-	       
-	    }
 
-	    public String getBrowseName() {
-	        return browseName;
-	    }
+	public MySensor(String browseName, int nodeId, MyStation station) {
+		this.browseName = browseName;
+		this.nodeId = nodeId;
+		this.station = station;
+	}
 
-	    public int getNodeId() {
-	        return nodeId;
-	    }
+	public MySensor(String browseName, int nodeId) {
+		this.browseName = browseName;
+		this.nodeId = nodeId;
+	}
 
+	public MySensor() {
 
-	    public static List<MySensor> createSensorObjectsFromFile(String filePath) {
-	        List<MySensor> sensorObjects = new ArrayList<>();
+	}
 
-	        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-	            String line;
-	            while ((line = reader.readLine()) != null) {
-	                // Verwende eine regular expression, um NodeId und BrowseName zu extrahieren
-	                Pattern pattern = Pattern.compile("NodeId: ns=(\\d+);s=, BrowseName: \\+(\\S+)");
-	                Matcher matcher = pattern.matcher(line);
+	public String getBrowseName() {
+		return browseName;
+	}
 
-	                while (matcher.find()) {
-	                    int nodeId = Integer.parseInt(matcher.group(1));
-	                    String originalBrowseName = matcher.group(2);
+	public int getNodeId() {
+		return nodeId;
+	}
 
-	                    String browseName = "\"" + "+" + originalBrowseName + "\"";
+	public static List<MySensor> createSensorObjectsFromFile(String filePath) {
+		List<MySensor> sensorObjects = new ArrayList<>();
 
-	                    // Erstelle ein SensorObj-Objekt und füge es der Liste hinzu
-	                    sensorObjects.add(new MySensor(browseName, nodeId));
-	                }
-	            }
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				// Verwende eine regular expression, um NodeId und BrowseName zu extrahieren
+				Pattern pattern = Pattern.compile("NodeId: ns=(\\d+);s=, BrowseName: \\+(\\S+)");
+				Matcher matcher = pattern.matcher(line);
 
-	        return sensorObjects;
-	    }
-	        
+				while (matcher.find()) {
+					int nodeId = Integer.parseInt(matcher.group(1));
+					String originalBrowseName = matcher.group(2);
+
+					String browseName = "\"" + "+" + originalBrowseName + "\"";
+
+					// Erstelle ein SensorObj-Objekt und füge es der Liste hinzu
+					sensorObjects.add(new MySensor(browseName, nodeId));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return sensorObjects;
+	}
+
 	public void setBrowseName(String browseName) {
 		this.browseName = browseName;
 	}
@@ -72,9 +71,11 @@ public class MySensor {
 	public void setNodeId(int nodeId) {
 		this.nodeId = nodeId;
 	}
+
 	public MyStation getStation() {
 		return station;
 	}
+
 	public void setStation(MyStation station) {
 		this.station = station;
 	}
@@ -86,9 +87,5 @@ public class MySensor {
 	public void setSensorId(int sensorId) {
 		this.sensorId = sensorId;
 	}
-	
-	
-	
 
-	
 }

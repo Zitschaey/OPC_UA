@@ -36,24 +36,24 @@ public class DatabaseService {
 			}
 		}
 	}
-	
+
 	public static List<MySensor> getSensorById(int sensorId) throws SQLException {
-	    List<MySensor> sensors = new ArrayList<>();
-	    Connection connection = createConnection();
-	    String sql = "SELECT * FROM sensor WHERE SensorId = ?";
-	    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-	        statement.setInt(1, sensorId);
-	        try (ResultSet resultSet = statement.executeQuery()) {
-	            if (resultSet.next()) {
-	                MySensor sensor = new MySensor();
-	                sensor.setBrowseName(resultSet.getString("AnzeigeName"));
-	                sensor.setNodeId(resultSet.getInt("KnotenId"));
-	                sensor.setSensorId(resultSet.getInt("SensorId"));
-	                sensors.add(sensor);
-	            }
-	            return sensors;
-	        }
-	    }
+		List<MySensor> sensors = new ArrayList<>();
+		Connection connection = createConnection();
+		String sql = "SELECT * FROM sensor WHERE SensorId = ?";
+		try (PreparedStatement statement = connection.prepareStatement(sql)) {
+			statement.setInt(1, sensorId);
+			try (ResultSet resultSet = statement.executeQuery()) {
+				if (resultSet.next()) {
+					MySensor sensor = new MySensor();
+					sensor.setBrowseName(resultSet.getString("AnzeigeName"));
+					sensor.setNodeId(resultSet.getInt("KnotenId"));
+					sensor.setSensorId(resultSet.getInt("SensorId"));
+					sensors.add(sensor);
+				}
+				return sensors;
+			}
+		}
 	}
 
 	public static void consoleMachine(Stationen station) throws Exception {
@@ -71,35 +71,35 @@ public class DatabaseService {
 		StringBuilder sensorData = new StringBuilder();
 		byte[] buffer = new byte[1024];
 		int bytesRead;
-		
-		while ((bytesRead = in.read(buffer)) != -1) {
-		    String data = new String(buffer, 0, bytesRead);
-		    sensorData.append(data);
 
-		    // Suche nach "--" als Trennzeichen
-		    int separatorIndex = sensorData.indexOf("--");
-		    if (separatorIndex != -1) {
-		        // Extrahiere die Zeile bis zum Trennzeichen
-		        String sensorLine = sensorData.substring(0, separatorIndex);
-		        
-		        // Überprüfe, ob die Zeile den Sensor enthält
-		        int sensorIndex = sensorLine.indexOf("Sensor:");
-		        if (sensorIndex != -1) {
-		            // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
-		            String sensorInfo = sensorLine.substring(sensorIndex);
-		            sensorLine = sensorLine.substring(0, sensorIndex);
-		        }
-		        
-		        // Ausgabe des Werts (Value) aus der Zeile
-		        String[] parts = sensorLine.split("VALUE: ");
-		        if (parts.length > 1) {
-		            String valueLine = parts[1].trim();
-		            System.out.println(valueLine);
-		        }
-		        
-		        // Lösche die verarbeitete Zeile aus dem StringBuilder
-		        sensorData.delete(0, separatorIndex + 2); // +2, um auch das Trennzeichen zu entfernen
-		    }
+		while ((bytesRead = in.read(buffer)) != -1) {
+			String data = new String(buffer, 0, bytesRead);
+			sensorData.append(data);
+
+			// Suche nach "--" als Trennzeichen
+			int separatorIndex = sensorData.indexOf("--");
+			if (separatorIndex != -1) {
+				// Extrahiere die Zeile bis zum Trennzeichen
+				String sensorLine = sensorData.substring(0, separatorIndex);
+
+				// Überprüfe, ob die Zeile den Sensor enthält
+				int sensorIndex = sensorLine.indexOf("Sensor:");
+				if (sensorIndex != -1) {
+					// Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+					String sensorInfo = sensorLine.substring(sensorIndex);
+					sensorLine = sensorLine.substring(0, sensorIndex);
+				}
+
+				// Ausgabe des Werts (Value) aus der Zeile
+				String[] parts = sensorLine.split("VALUE: ");
+				if (parts.length > 1) {
+					String valueLine = parts[1].trim();
+					System.out.println(valueLine);
+				}
+
+				// Lösche die verarbeitete Zeile aus dem StringBuilder
+				sensorData.delete(0, separatorIndex + 2); // +2, um auch das Trennzeichen zu entfernen
+			}
 		}
 	}
 
@@ -126,56 +126,55 @@ public class DatabaseService {
 			int index = 0;
 			int bytesRead;
 			int highestID = getHighestcrawlerID(connection);
-			
-			
-			while ((bytesRead = in.read(buffer)) != -1) {
-			    String data = new String(buffer, 0, bytesRead);
-			    sensorData.append(data);
 
-			    // Suche nach "--" als Trennzeichen
-			    int separatorIndex = sensorData.indexOf("--");
-			    if (separatorIndex != -1) {
-			        // Extrahiere die Zeile bis zum Trennzeichen
-			        String sensorLine = sensorData.substring(0, separatorIndex);
-			        
-			        // Überprüfe, ob die Zeile den Sensor enthält
-			        int sensorIndex = sensorLine.indexOf("Sensor:");
-			        if (sensorIndex != -1) {
-			            // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
-			            String sensorInfo = sensorLine.substring(sensorIndex);
-			            sensorLine = sensorLine.substring(0, sensorIndex);
-			        }
-			        
-			        // Ausgabe des Werts (Value) aus der Zeile
-			        String[] parts = sensorLine.split("VALUE: ");
-			        if (parts.length > 1) {
-			        	String valueLine = parts[1].trim();
+			while ((bytesRead = in.read(buffer)) != -1) {
+				String data = new String(buffer, 0, bytesRead);
+				sensorData.append(data);
+
+				// Suche nach "--" als Trennzeichen
+				int separatorIndex = sensorData.indexOf("--");
+				if (separatorIndex != -1) {
+					// Extrahiere die Zeile bis zum Trennzeichen
+					String sensorLine = sensorData.substring(0, separatorIndex);
+
+					// Überprüfe, ob die Zeile den Sensor enthält
+					int sensorIndex = sensorLine.indexOf("Sensor:");
+					if (sensorIndex != -1) {
+						// Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+						String sensorInfo = sensorLine.substring(sensorIndex);
+						sensorLine = sensorLine.substring(0, sensorIndex);
+					}
+
+					// Ausgabe des Werts (Value) aus der Zeile
+					String[] parts = sensorLine.split("VALUE: ");
+					if (parts.length > 1) {
+						String valueLine = parts[1].trim();
 						highestID++;
 						statement.setInt(1, highestID);
 						statement.setInt(2, station.getStationID());
 						statement.setInt(3, rawList.get(index).getSensorId());
-						statement.setInt(4, insertDataValue(connection, valueLine));	
+						statement.setInt(4, insertDataValue(connection, valueLine));
 						statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
 						statement.executeUpdate();
-						System.out.println("Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
+						System.out.println(
+								"Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
 						index++;
-			        }
-			        
-			        // Lösche die verarbeitete Zeile aus dem StringBuilder
-			        sensorData.delete(0, separatorIndex + 2);
-			        
-			        if (rawList.size() == index) {
+					}
+
+					// Lösche die verarbeitete Zeile aus dem StringBuilder
+					sensorData.delete(0, separatorIndex + 2);
+
+					if (rawList.size() == index) {
 						break;
 
 					}
-			    }
+				}
 			}
 		}
-				
-		
+
 	}
-	
-    public static void inserDataCrawler(Stationen station) throws Exception {
+
+	public static void inserDataCrawler(Stationen station) throws Exception {
 
 		// Sensorliste erstellen
 		SensorList sensorlist = StationService.createSensorList(station);
@@ -198,55 +197,54 @@ public class DatabaseService {
 			int index = 0;
 			int bytesRead;
 			int highestID = getHighestcrawlerID(connection);
-			
-			
-			while ((bytesRead = in.read(buffer)) != -1) {
-			    String data = new String(buffer, 0, bytesRead);
-			    sensorData.append(data);
 
-			    // Suche nach "--" als Trennzeichen
-			    int separatorIndex = sensorData.indexOf("--");
-			    if (separatorIndex != -1) {
-			        // Extrahiere die Zeile bis zum Trennzeichen
-			        String sensorLine = sensorData.substring(0, separatorIndex);
-			        
-			        // Überprüfe, ob die Zeile den Sensor enthält
-			        int sensorIndex = sensorLine.indexOf("Sensor:");
-			        if (sensorIndex != -1) {
-			            // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
-			            String sensorInfo = sensorLine.substring(sensorIndex);
-			            sensorLine = sensorLine.substring(0, sensorIndex);
-			        }
-			        
-			        // Ausgabe des Werts (Value) aus der Zeile
-			        String[] parts = sensorLine.split("VALUE: ");
-			        if (parts.length > 1) {
-			        	String valueLine = parts[1].trim();
+			while ((bytesRead = in.read(buffer)) != -1) {
+				String data = new String(buffer, 0, bytesRead);
+				sensorData.append(data);
+
+				// Suche nach "--" als Trennzeichen
+				int separatorIndex = sensorData.indexOf("--");
+				if (separatorIndex != -1) {
+					// Extrahiere die Zeile bis zum Trennzeichen
+					String sensorLine = sensorData.substring(0, separatorIndex);
+
+					// Überprüfe, ob die Zeile den Sensor enthält
+					int sensorIndex = sensorLine.indexOf("Sensor:");
+					if (sensorIndex != -1) {
+						// Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+						String sensorInfo = sensorLine.substring(sensorIndex);
+						sensorLine = sensorLine.substring(0, sensorIndex);
+					}
+
+					// Ausgabe des Werts (Value) aus der Zeile
+					String[] parts = sensorLine.split("VALUE: ");
+					if (parts.length > 1) {
+						String valueLine = parts[1].trim();
 						highestID++;
 						statement.setInt(1, highestID);
 						statement.setInt(2, station.getStationID());
 						statement.setInt(3, rawList.get(index).getSensorId());
-						statement.setInt(4, insertDataValue(connection, valueLine));	
+						statement.setInt(4, insertDataValue(connection, valueLine));
 						statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
 						statement.executeUpdate();
-						System.out.println("Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
+						System.out.println(
+								"Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
 						index++;
-			        }
-			        
-			        // Lösche die verarbeitete Zeile aus dem StringBuilder
-			        sensorData.delete(0, separatorIndex + 2);
-			        
-			        if (rawList.size() == index) {
+					}
+
+					// Lösche die verarbeitete Zeile aus dem StringBuilder
+					sensorData.delete(0, separatorIndex + 2);
+
+					if (rawList.size() == index) {
 						break;
 
 					}
-			    }
+				}
 			}
 		}
-				
-		
+
 	}
-	
+
 	public static int insertDataValue(Connection connection, String rawValue) throws SQLException {
 		String insertSql = "INSERT INTO datavalue (ValueID, Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?, ?)";
 
@@ -290,4 +288,41 @@ public class DatabaseService {
 		}
 	}
 
+	public static void insertSensorDataIntoDatabase(String filePath, int stationID) {
+		MySensor extractor = new MySensor();
+		List<MySensor> sensorObjects = extractor.createSensorObjectsFromFile(filePath);
+
+		try (Connection connection = createConnection()) {
+			String sql = "INSERT INTO sensor (SensorID, SensorTypID, StationID, AnzeigeName, KnotenId) VALUES (?, ?, ?, ?, ?)";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			int highestSensorID = getHighestSensorID(connection);
+
+			for (MySensor sensorObj : sensorObjects) {
+				highestSensorID++;
+				statement.setInt(1, highestSensorID);
+				statement.setNull(2, java.sql.Types.INTEGER);
+				statement.setInt(3, stationID);
+				statement.setString(4, sensorObj.getBrowseName());
+				statement.setInt(5, sensorObj.getNodeId());
+
+				statement.executeUpdate();
+				System.out.println("Neuer Sensor wurde hinzugefügt mit SensorID: " + highestSensorID);
+			}
+
+			System.out.println("Daten wurden erfolgreich hinzugefügt.");
+		} catch (SQLException e) {
+			System.err.println("Fehler beim Hinzufügen der Daten: " + e.getMessage());
+		}
+	}
+
+	private static int getHighestSensorID(Connection connection) throws SQLException {
+		int highestSensorID = 0;
+		String query = "SELECT MAX(SensorID) AS HighestID FROM sensor";
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(query);
+		if (resultSet.next()) {
+			highestSensorID = resultSet.getInt("HighestID");
+		}
+		return highestSensorID;
+	}
 }

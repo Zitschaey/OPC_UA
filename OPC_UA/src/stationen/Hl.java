@@ -24,6 +24,5 @@ public class Hl extends MyStation {
 	public Hl() throws SQLException {
 		super(Stationen.HL, Stationen.HL.getStation().getID(), StationService.createSensorList(Stationen.HL));
 	}
-		
 
 }

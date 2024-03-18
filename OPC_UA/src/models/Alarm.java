@@ -4,14 +4,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 
-
 public class Alarm {
 
 	private long dauer;
 	private Date datum;
 	private String fehlermeldung;
 	private MyStation station;
-	
 
 	public long getDauer() {
 		return dauer;

@@ -11,14 +11,14 @@ import models.MySensor;
 
 public class StationService {
 
-public static void createConnection(Stationen station) throws Exception {
-	
-	SensorList sensorlist = createSensorList(station);
-	OPCClientETS.getInstance().connectToMachine(station.getStation());
-	OPCClientETS.getInstance().setCrawlOffset(1000);
-	OPCClientETS.getInstance().browseOPCServer(sensorlist);
+	public static void createConnection(Stationen station) throws Exception {
 
-	InputStream in = OPCClientETS.getInstance().getInputStream();
+		SensorList sensorlist = createSensorList(station);
+		OPCClientETS.getInstance().connectToMachine(station.getStation());
+		OPCClientETS.getInstance().setCrawlOffset(1000);
+		OPCClientETS.getInstance().browseOPCServer(sensorlist);
+
+		InputStream in = OPCClientETS.getInstance().getInputStream();
 
 		byte[] buffer = new byte[50000];
 		int bytesRead;
@@ -26,28 +26,28 @@ public static void createConnection(Stationen station) throws Exception {
 			String data = new String(buffer, 0, bytesRead);
 			System.out.println(data + "\n");
 		}
-	
-	OPCClientETS.getInstance().disconnect();
-}
 
-public static SensorList createSensorList(Stationen station) throws SQLException {
-List<MySensor> sensorObjects = DatabaseService.getSensorByStation(station);
-SensorList list = new SensorList();
+		OPCClientETS.getInstance().disconnect();
+	}
 
-for (MySensor sensorObj : sensorObjects) {
-	list.addSensor(sensorObj.getNodeId(), sensorObj.getBrowseName());
-}
-return list;
-}
+	public static SensorList createSensorList(Stationen station) throws SQLException {
+		List<MySensor> sensorObjects = DatabaseService.getSensorByStation(station);
+		SensorList list = new SensorList();
 
-public static SensorList createSensorListForOne(int id) throws SQLException {
-List<MySensor> sensorObjects = DatabaseService.getSensorById(id);
-SensorList list = new SensorList();
+		for (MySensor sensorObj : sensorObjects) {
+			list.addSensor(sensorObj.getNodeId(), sensorObj.getBrowseName());
+		}
+		return list;
+	}
 
-for (MySensor sensorObj : sensorObjects) {
-	list.addSensor(sensorObj.getNodeId(), sensorObj.getBrowseName());
-}
-return list;
-}
+	public static SensorList createSensorListForOne(int id) throws SQLException {
+		List<MySensor> sensorObjects = DatabaseService.getSensorById(id);
+		SensorList list = new SensorList();
+
+		for (MySensor sensorObj : sensorObjects) {
+			list.addSensor(sensorObj.getNodeId(), sensorObj.getBrowseName());
+		}
+		return list;
+	}
 
 }

@@ -2,7 +2,6 @@ package models;
 
 import java.util.ArrayList;
 
-
 public class Anlage {
 
 	private ArrayList<MyStation> stations;
@@ -23,7 +22,6 @@ public class Anlage {
 	public void setStations(ArrayList<MyStation> stations) {
 		this.stations = stations;
 	}
-	
 
 	public ArrayList<Order> getOrders() {
 		return orders;
@@ -61,7 +59,7 @@ public class Anlage {
 	public void addStation(MyStation station) {
 		stations.add(station);
 	}
-	
+
 	public void addOrder(Order order) {
 		orders.add(order);
 	}

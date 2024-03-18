@@ -25,6 +25,4 @@ public class Rl extends MyStation {
 		super(Stationen.RI, Stationen.RI.getStation().getID(), StationService.createSensorList(Stationen.RI));
 	}
 
-	
-
 }

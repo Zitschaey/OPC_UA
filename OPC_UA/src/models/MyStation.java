@@ -8,48 +8,40 @@ import enums.Stationen;
 import services.DatabaseService;
 import services.StationService;
 
-public abstract class  MyStation {
+public abstract class MyStation {
 
-	
 	protected Stationen station;
 	protected String bezeichnung;
 	protected Anlage anlage;
 	protected ArrayList<Alarm> alarms;
-	protected SensorList sensors;	
+	protected SensorList sensors;
 
-	public MyStation(Stationen station, String bezeichnung, SensorList sensors) {
+	protected MyStation(Stationen station, String bezeichnung, SensorList sensors) {
 		super();
 		this.station = station;
 		this.bezeichnung = bezeichnung;
 		this.sensors = sensors;
 	}
 
-	public  void startDatacrawl() throws Exception
-	{DatabaseService.inserDataCrawler(station);}
+	public void startDatacrawl() throws Exception {
+		DatabaseService.inserDataCrawler(station);
+	}
 
 	public Stationen getStation() {
 		return station;
 	}
 
-
-
 	public void setStation(Stationen station) {
 		this.station = station;
 	}
-
-
 
 	public String getBezeichnung() {
 		return bezeichnung;
 	}
 
-
-
 	public void setBezeichnung(String bezeichnung) {
 		this.bezeichnung = bezeichnung;
 	}
-
-
 
 	public String getStationName() {
 		return bezeichnung;
@@ -58,7 +50,6 @@ public abstract class  MyStation {
 	public void setStationName(String stationName) {
 		this.bezeichnung = stationName;
 	}
-
 
 	public Anlage getAnlage() {
 		return anlage;
@@ -80,18 +71,12 @@ public abstract class  MyStation {
 		alarms.add(alarm);
 	}
 
-
-
-
 	public SensorList getSensors() {
 		return sensors;
 	}
-
-
 
 	public void setSensors(SensorList sensors) {
 		this.sensors = sensors;
 	}
 
-	
 }
