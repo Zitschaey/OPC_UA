@@ -56,8 +56,6 @@ public class DatabaseService {
 	    }
 	}
 
-
-
 	public static void consoleMachine(Stationen station) throws Exception {
 
 		// Sensorliste erstellen
@@ -176,7 +174,8 @@ public class DatabaseService {
 				
 		
 	}
-	public static void inserDataCrawler(Stationen station) throws Exception {
+	
+    public static void inserDataCrawler(Stationen station) throws Exception {
 
 		// Sensorliste erstellen
 		SensorList sensorlist = StationService.createSensorList(station);
@@ -247,7 +246,6 @@ public class DatabaseService {
 				
 		
 	}
-	
 	
 	public static int insertDataValue(Connection connection, String rawValue) throws SQLException {
 		String insertSql = "INSERT INTO datavalue (ValueID, Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?, ?)";

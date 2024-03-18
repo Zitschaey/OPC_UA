@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +21,12 @@ import enums.Stationen;
 import models.Anlage;
 import models.MySensor;
 import models.MyStation;
+import services.DatabaseService;
 import services.StationService;
 
-public class Bf {
-	public static void main(String[] args) throws Exception {
-		
-		StationService.createConnection(Stationen.BF);
-
+public class Bf extends MyStation {
+	public Bf() throws SQLException {
+		super(Stationen.BF, Stationen.BF.getStation().getID(), StationService.createSensorList(Stationen.BF));
 	}
+
 }

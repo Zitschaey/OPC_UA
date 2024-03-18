@@ -2,39 +2,54 @@ package models;
 
 import java.util.ArrayList;
 
+import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
+import enums.Stationen;
+import services.DatabaseService;
+import services.StationService;
 
-public class MyStation {
-	private String bezeichnung;
-	private Station station;
-	private int stationsId;
-	private Anlage anlage;
-	private ArrayList<Alarm> alarms;
-	private ArrayList<MySensor> sensors;
+public abstract class  MyStation {
 
-	public MyStation(String bezeichnung) {
+	
+	protected Stationen station;
+	protected String bezeichnung;
+	protected Anlage anlage;
+	protected ArrayList<Alarm> alarms;
+	protected SensorList sensors;	
+
+	public MyStation(Stationen station, String bezeichnung, SensorList sensors) {
 		super();
-		this.bezeichnung = bezeichnung;
-
-	}
-
-	public MyStation(String stationName, Station station, int stationsId, Anlage anlage, ArrayList<Alarm> alarms,
-			ArrayList<MySensor> sensors) {
-		super();
-		this.bezeichnung = stationName;
 		this.station = station;
-		this.stationsId = stationsId;
-		this.anlage = anlage;
-		this.alarms = alarms;
+		this.bezeichnung = bezeichnung;
 		this.sensors = sensors;
 	}
 
-	public MyStation(String stationName, Station station, Anlage anlage) {
-		super();
-		this.bezeichnung = stationName;
-		this.anlage = anlage;
+	public  void startDatacrawl() throws Exception
+	{DatabaseService.inserDataCrawler(station);}
+
+	public Stationen getStation() {
+		return station;
+	}
+
+
+
+	public void setStation(Stationen station) {
 		this.station = station;
 	}
+
+
+
+	public String getBezeichnung() {
+		return bezeichnung;
+	}
+
+
+
+	public void setBezeichnung(String bezeichnung) {
+		this.bezeichnung = bezeichnung;
+	}
+
+
 
 	public String getStationName() {
 		return bezeichnung;
@@ -44,13 +59,6 @@ public class MyStation {
 		this.bezeichnung = stationName;
 	}
 
-	public int getStationsId() {
-		return stationsId;
-	}
-
-	public void setStationsId(int stationsId) {
-		this.stationsId = stationsId;
-	}
 
 	public Anlage getAnlage() {
 		return anlage;
@@ -68,20 +76,22 @@ public class MyStation {
 		this.alarms = alarms;
 	}
 
-	public ArrayList<MySensor> getSensors() {
-		return sensors;
-	}
-
-	public void setSensors(ArrayList<MySensor> sensors) {
-		this.sensors = sensors;
-	}
-
-	public void addSensor(MySensor sensor) {
-		sensors.add(sensor);
-	}
-
 	public void addSensor(Alarm alarm) {
 		alarms.add(alarm);
 	}
 
+
+
+
+	public SensorList getSensors() {
+		return sensors;
+	}
+
+
+
+	public void setSensors(SensorList sensors) {
+		this.sensors = sensors;
+	}
+
+	
 }
