@@ -1,4 +1,4 @@
-package db_services;
+package main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import anlageObjekte.MySensor;
 import de.judge.opc_ets.SensorList;
+import models.MySensor;
 
 public class Start {
 

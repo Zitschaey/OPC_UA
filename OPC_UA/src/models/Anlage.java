@@ -1,4 +1,4 @@
-package anlageObjekte;
+package models;
 
 import java.util.ArrayList;
 

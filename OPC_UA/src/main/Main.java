@@ -1,13 +1,14 @@
-package db_services;
+package main;
 import enums.Stationen;
+import services.DatabaseService;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
 	
-		//Gesamte Ausgabe aller Sensoren einer Sation
+   //Datacrawl aller Sensoren einer Sation
 	//DatabaseService.inserDataCrawler(Stationen.RI);	
 	DatabaseService.inserDataCrawler(Stationen.HL);
-	//Gezielte Ausgabe eines Sensors einer Station nach ID;
+	//Datacrawl eines Sensors einer Station nach ID;
 	// DatabaseService.inserDataCrawler(Stationen.BF, 1);
 	
 	}

@@ -11,10 +11,10 @@ import java.util.List;
 import com.prosysopc.ua.SecureIdentityException;
 import com.prosysopc.ua.ServiceException;
 
-import anlageObjekte.MySensor;
 import de.judge.opc_ets.OPCClientETS;
 import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
+import models.MySensor;
 
 public class Hl {
 	public static void main(String[] args) {

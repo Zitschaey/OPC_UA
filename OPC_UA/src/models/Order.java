@@ -1,4 +1,4 @@
-package anlageObjekte;
+package models;
 
 public class Order {
 	private int[] anzahlKugel = new int[3];

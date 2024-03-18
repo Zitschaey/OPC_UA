@@ -1,4 +1,4 @@
-package extraction;
+package legacy_exctraction;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

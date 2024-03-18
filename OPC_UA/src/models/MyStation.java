@@ -1,11 +1,10 @@
-package anlageObjekte;
+package models;
 
 import java.util.ArrayList;
 
 import de.judge.opc_ets.Station;
 
 public class MyStation {
-
 	private String bezeichnung;
 	private Station station;
 	private int stationsId;

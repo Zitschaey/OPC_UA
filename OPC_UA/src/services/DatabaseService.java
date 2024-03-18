@@ -1,14 +1,14 @@
-package db_services;
+package services;
 
 import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import anlageObjekte.MySensor;
 import de.judge.opc_ets.OPCClientETS;
 import de.judge.opc_ets.SensorList;
 import enums.Stationen;
+import models.MySensor;
 
 public class DatabaseService {
 
