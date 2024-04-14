@@ -18,11 +18,12 @@ import de.judge.opc_ets.Station;
 import enums.Stationen;
 import models.MySensor;
 import models.MyStation;
+import services.DatabaseService;
 import services.StationService;
 
 public class Rl extends MyStation {
-	public Rl() throws SQLException {
-		super(Stationen.RI, Stationen.RI.getStation().getID(), StationService.createSensorList(Stationen.RI));
+	public Rl(){
+		super(Stationen.RI);
 	}
 
 }

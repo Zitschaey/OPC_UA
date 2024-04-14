@@ -1,11 +1,14 @@
 package models;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
 import enums.Stationen;
 import services.DatabaseService;
+import services.InsertionService;
 import services.StationService;
 
 public abstract class MyStation {
@@ -14,17 +17,28 @@ public abstract class MyStation {
 	protected String bezeichnung;
 	protected Anlage anlage;
 	protected ArrayList<Alarm> alarms;
-	protected SensorList sensors;
-
-	protected MyStation(Stationen station, String bezeichnung, SensorList sensors) {
+	protected SensorList sensorList;
+	protected  List<MySensor> mySensorList;
+	
+	private InsertionService insertionService = new InsertionService(DatabaseService.createConnection());
+	
+	
+	protected MyStation(Stationen station ) {
 		super();
 		this.station = station;
-		this.bezeichnung = bezeichnung;
-		this.sensors = sensors;
+		this.bezeichnung = station.getStation().getID();
+		try {
+			this.sensorList =  StationService.createSensorList(station);
+			this.mySensorList = DatabaseService.getSensorByStation(station);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
+	
 	public void startDatacrawl() throws Exception {
-		DatabaseService.inserDataCrawler(station);
+		insertionService.insertDataCrawler(this);
 	}
 
 	public Stationen getStation() {
@@ -41,14 +55,6 @@ public abstract class MyStation {
 
 	public void setBezeichnung(String bezeichnung) {
 		this.bezeichnung = bezeichnung;
-	}
-
-	public String getStationName() {
-		return bezeichnung;
-	}
-
-	public void setStationName(String stationName) {
-		this.bezeichnung = stationName;
 	}
 
 	public Anlage getAnlage() {
@@ -71,12 +77,22 @@ public abstract class MyStation {
 		alarms.add(alarm);
 	}
 
-	public SensorList getSensors() {
-		return sensors;
+
+	public SensorList getSensorList() {
+		return sensorList;
 	}
 
-	public void setSensors(SensorList sensors) {
-		this.sensors = sensors;
+	public void setSensorList(SensorList sensorList) {
+		this.sensorList = sensorList;
 	}
 
+	public List<MySensor> getMySensorList() {
+		return mySensorList;
+	}
+
+	public void setMySensorList(List<MySensor> mySensorList) {
+		this.mySensorList = mySensorList;
+	}
+
+	
 }

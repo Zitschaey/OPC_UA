@@ -25,8 +25,8 @@ import services.DatabaseService;
 import services.StationService;
 
 public class Bf extends MyStation {
-	public Bf() throws SQLException {
-		super(Stationen.BF, Stationen.BF.getStation().getID(), StationService.createSensorList(Stationen.BF));
+	public Bf(){
+		super(Stationen.BF);
 	}
 
 }

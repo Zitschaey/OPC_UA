@@ -12,10 +12,16 @@ import models.MySensor;
 
 public class DatabaseService {
 
-	public static Connection createConnection() throws SQLException {
+	public static Connection createConnection()  {
 
-		String connStr = "jdbc:mysql://localhost:3306/testdatenbank";
-		return DriverManager.getConnection(connStr, "root", "");
+		String connStr = "jdbc:mysql://localhost:3306/opc_ua";
+		try {
+			return DriverManager.getConnection(connStr, "root", "");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static List<MySensor> getSensorByStation(Stationen station) throws SQLException {
@@ -157,6 +163,7 @@ public class DatabaseService {
 						statement.setInt(3, rawList.get(index).getSensorId());
 						statement.setInt(4, insertDataValue(connection, valueLine));
 						statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
+						statement.addBatch();
 						statement.executeUpdate();
 						System.out.println(
 								"Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
