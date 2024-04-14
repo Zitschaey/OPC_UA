@@ -1,5 +1,18 @@
 package main;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import enums.Stationen;
 import services.DatabaseService;
 import stationen.Bf;
@@ -10,30 +23,103 @@ import stationen.Rl;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
+	    
+		sequenceStart(20);
+	    
+	    
+	    
+	    
+	}
+	// DataCrawl über die Stationsobjekte straten
 
-		Bf bfAnlange = new Bf();
-		Hl hlAnlange = new Hl();
-		Pl plAnlage = new Pl();
-		PR prAnlage = new PR();
-		Rl rlAnlage = new Rl();
+	// bfAnlange.startDatacrawl();
+	// hlAnlange.startDatacrawl();+
+	// bfAnlange.startDatacrawl();
+	// plAnlage.startDatacrawl();
+	// prAnlage.startDatacrawl();
+	// rlAnlage.startDatacrawl();
 
-		// DataCrawl über die Stationsobjekte straten
+	// Datacrawl über den DatabaseService starten (alle Sensoren)
+	// DatabaseService.inserDataCrawler(Stationen.HL);
 
-		bfAnlange.startDatacrawl();
-		// hlAnlange.startDatacrawl();
-		// bfAnlange.startDatacrawl();
-		// plAnlage.startDatacrawl();
-		// prAnlage.startDatacrawl();
-		// rlAnlage.startDatacrawl();
+	// Datacrawl über den DatabaseService starten (einzelner Sensor mit ID)
+	// DatabaseService.inserDataCrawler(Stationen.BF, 1);
 
-		// Datacrawl über den DatabaseService starten (alle Sensoren)
+	public static void sequenceStart(int durationInMinutes) throws InterruptedException {
 
-		DatabaseService.inserDataCrawler(Stationen.RI);
-		// DatabaseService.inserDataCrawler(Stationen.HL);
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1); 
+		Runnable task = () -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.RI);
+				DatabaseService.inserDataCrawler(Stationen.BF);
+				DatabaseService.inserDataCrawler(Stationen.HL);
+				DatabaseService.inserDataCrawler(Stationen.PL);
+				DatabaseService.inserDataCrawler(Stationen.PR);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		};
 
-		// Datacrawl über den DatabaseService starten (einzelner Sensor mit ID)
-		DatabaseService.inserDataCrawler(Stationen.BF, 1);
-
+		executor.scheduleAtFixedRate(task, 0, 1, TimeUnit.NANOSECONDS);
+        Thread.sleep(durationInMinutes * 60 * 1000); 
+		executor.shutdown();
 	}
 
-}
+	public static void parallelStart() throws InterruptedException, SQLException, ExecutionException {
+		  String connStr = "jdbc:mysql://localhost:3306/testdatenbank";
+	        Connection connection = DriverManager.getConnection(connStr, "root", "");
+
+		ExecutorService executor = Executors.newFixedThreadPool(5);
+
+        // Parallele Ausführung der Prozesse für jede Station
+        executor.submit(() -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.RI,connection);
+			} catch (Exception e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+		});
+        executor.submit(() -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.BF, connection);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+        executor.submit(() -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.HL, connection);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+        executor.submit(() -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.PR, connection);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+        executor.submit(() -> {
+			try {
+				DatabaseService.inserDataCrawler(Stationen.PL, connection);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+
+        // Warten, bis alle Tasks abgeschlossen sind
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+	    }
+

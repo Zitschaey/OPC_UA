@@ -101,7 +101,9 @@ public class DatabaseService {
 				sensorData.delete(0, separatorIndex + 2); // +2, um auch das Trennzeichen zu entfernen
 			}
 		}
+		OPCClientETS.getInstance().disconnect();
 	}
+	
 
 	public static void inserDataCrawler(Stationen station, int id) throws Exception {
 
@@ -125,7 +127,7 @@ public class DatabaseService {
 			byte[] buffer = new byte[1024];
 			int index = 0;
 			int bytesRead;
-			int highestID = getHighestcrawlerID(connection);
+			int highestID = getNextCrawlerID(connection);
 
 			while ((bytesRead = in.read(buffer)) != -1) {
 				String data = new String(buffer, 0, bytesRead);
@@ -171,7 +173,71 @@ public class DatabaseService {
 				}
 			}
 		}
+		OPCClientETS.getInstance().disconnect();
+	}
+	public static void inserDataCrawler(Stationen station, Connection connection) throws Exception {
+	    // Sensorliste erstellen
+	    SensorList sensorlist = StationService.createSensorList(station);
+	    List<MySensor> rawList = DatabaseService.getSensorByStation(station);
+	    OPCClientETS.getInstance().connectToMachine(station.getStation());
+	    OPCClientETS.getInstance().setCrawlOffset(1000);
+	    OPCClientETS.getInstance().browseOPCServer(sensorlist);
 
+	    // InputStream erhalten
+	    InputStream in = OPCClientETS.getInstance().getInputStream();
+
+	    // Prepared Statement zum Einfügen von Daten erstellen
+	    String insertSql = "INSERT INTO datacrawl (StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?)";
+	    try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
+	        StringBuilder sensorData = new StringBuilder();
+	        byte[] buffer = new byte[1024];
+	        int index = 0;
+	        int bytesRead;
+
+	        while ((bytesRead = in.read(buffer)) != -1) {
+	            String data = new String(buffer, 0, bytesRead);
+	            sensorData.append(data);
+
+	            // Suche nach "--" als Trennzeichen
+	            int separatorIndex = sensorData.indexOf("--");
+	            if (separatorIndex != -1) {
+	                // Extrahiere die Zeile bis zum Trennzeichen
+	                String sensorLine = sensorData.substring(0, separatorIndex);
+
+	                // Überprüfe, ob die Zeile den Sensor enthält
+	                int sensorIndex = sensorLine.indexOf("Sensor:");
+	                if (sensorIndex != -1) {
+	                    // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+	                    String sensorInfo = sensorLine.substring(sensorIndex);
+	                    sensorLine = sensorLine.substring(0, sensorIndex);
+	                }
+
+	                // Ausgabe des Werts (Value) aus der Zeile
+	                String[] parts = sensorLine.split("VALUE: ");
+	                if (parts.length > 1) {
+	                    String valueLine = parts[1].trim();
+	                    statement.setInt(1, station.getStationID());
+	                    statement.setInt(2, rawList.get(index).getSensorId());
+	                    statement.setInt(3, insertDataValue(connection, valueLine));
+	                    statement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
+	                    statement.executeUpdate();
+	                    System.out.println(
+	                            "Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
+	                    index++;
+	                }
+
+	                // Lösche die verarbeitete Zeile aus dem StringBuilder
+	                sensorData.delete(0, separatorIndex + 2);
+
+	                if (rawList.size() == index) {
+	                    break;
+
+	                }
+	            }
+	        }
+	    
+	    }
+	   
 	}
 
 	public static void inserDataCrawler(Stationen station) throws Exception {
@@ -224,7 +290,7 @@ public class DatabaseService {
 						statement.setInt(1, highestID);
 						statement.setInt(2, station.getStationID());
 						statement.setInt(3, rawList.get(index).getSensorId());
-						statement.setInt(4, insertDataValue(connection, valueLine));
+						statement.setInt(4, insertDataValueManuellID(connection, valueLine));
 						statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
 						statement.executeUpdate();
 						System.out.println(
@@ -242,16 +308,113 @@ public class DatabaseService {
 				}
 			}
 		}
+		OPCClientETS.getInstance().disconnect();
 
 	}
+	
+	public static void inserDataCrawlerEternal(Stationen station) throws Exception {
+
+	    // Sensorliste erstellen
+	    SensorList sensorlist = StationService.createSensorList(station);
+	    List<MySensor> rawList = DatabaseService.getSensorByStation(station);
+	    OPCClientETS.getInstance().connectToMachine(station.getStation());
+	    OPCClientETS.getInstance().setCrawlOffset(1000);
+	    OPCClientETS.getInstance().browseOPCServer(sensorlist);
+
+	    // InputStream erhalten
+	    InputStream in = OPCClientETS.getInstance().getInputStream();
+
+	    // Datenbankverbindung herstellen
+	    Connection connection = createConnection();
+
+	    // Prepared Statement zum Einfügen von Daten erstellen
+	    String insertSql = "INSERT INTO datacrawl (CrawlerID, StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?, ?)";
+	    try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
+	        StringBuilder sensorData = new StringBuilder();
+	        byte[] buffer = new byte[1024];
+	        int index = 0;
+	        int highestID = getHighestcrawlerID(connection);
+
+	        while (true) { // Unendliche Schleife
+	            int bytesRead = in.read(buffer);
+	            if (bytesRead == -1) { // Überprüfen, ob das Ende des Streams erreicht wurde
+	                break; // Wenn ja, die Schleife verlassen
+	            }
+	            String data = new String(buffer, 0, bytesRead);
+	            sensorData.append(data);
+
+	            // Suche nach "--" als Trennzeichen
+	            int separatorIndex = sensorData.indexOf("--");
+	            if (separatorIndex != -1) {
+	                // Extrahiere die Zeile bis zum Trennzeichen
+	                String sensorLine = sensorData.substring(0, separatorIndex);
+
+	                // Überprüfe, ob die Zeile den Sensor enthält
+	                int sensorIndex = sensorLine.indexOf("Sensor:");
+	                if (sensorIndex != -1) {
+	                    // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+	                    String sensorInfo = sensorLine.substring(sensorIndex);
+	                    sensorLine = sensorLine.substring(0, sensorIndex);
+	                }
+
+	                // Ausgabe des Werts (Value) aus der Zeile
+	                String[] parts = sensorLine.split("VALUE: ");
+	                if (parts.length > 1) {
+	                    String valueLine = parts[1].trim();
+	                    highestID++;
+	                    statement.setInt(1, highestID);
+	                    statement.setInt(2, station.getStationID());
+	                    statement.setInt(3, rawList.get(index).getSensorId());
+	                    statement.setInt(4, insertDataValue(connection, valueLine));
+	                    statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
+	                    statement.executeUpdate();
+	                    System.out.println(
+	                            "Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
+	                    index++;
+	                }
+
+	                // Lösche die verarbeitete Zeile aus dem StringBuilder
+	                sensorData.delete(0, separatorIndex + 2);
+
+	                if (rawList.size() == index) {
+	                    break;
+	                }
+	            }
+	        }
+	    }
+	    OPCClientETS.getInstance().disconnect();
+	}
+
 
 	public static int insertDataValue(Connection connection, String rawValue) throws SQLException {
+	    String insertSql = "INSERT INTO datavalue (Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?)";
+
+	    int generatedValueID;
+	    try (PreparedStatement statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+	        statement.setString(1, rawValue);
+	        statement.setString(2, null);
+	        statement.setBoolean(3, true);
+	        statement.executeUpdate();
+
+	        // Abrufen der automatisch generierten ValueID
+	        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	                generatedValueID = generatedKeys.getInt(1);
+	            } else {
+	                throw new SQLException("Failed to retrieve generated ValueID.");
+	            }
+	        }
+	    }
+
+	    return generatedValueID;
+	}
+	
+	public static int insertDataValueManuellID(Connection connection, String rawValue) throws SQLException {
 		String insertSql = "INSERT INTO datavalue (ValueID, Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?, ?)";
 
 		int maxValueID;
 		try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
-
-			maxValueID = getHighestDatavalueID(connection);
+			maxValueID = getNextDataValueID(connection) - 1;
 			statement.setInt(1, maxValueID); // Verwende die Methode, um die nächste verfügbare ID zu erhalten
 			statement.setString(2, rawValue);
 			statement.setString(3, null);
@@ -261,6 +424,7 @@ public class DatabaseService {
 		}
 		return maxValueID;
 	}
+
 
 	private static int getHighestcrawlerID(Connection connection) throws SQLException {
 		String sql = "SELECT MAX(CrawlerID) AS MaxCrawlerID FROM datacrawl";
@@ -324,5 +488,14 @@ public class DatabaseService {
 			highestSensorID = resultSet.getInt("HighestID");
 		}
 		return highestSensorID;
+	}
+	
+	private static synchronized int getNextCrawlerID(Connection connection) throws SQLException {
+	    int highestID = getHighestcrawlerID(connection);
+	    return highestID + 1;
+	}
+	private static synchronized int getNextDataValueID(Connection connection) throws SQLException {
+	    int highestID = getHighestDatavalueID(connection);
+	    return highestID + 1;
 	}
 }
