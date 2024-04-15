@@ -1,6 +1,8 @@
 package services;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,70 +17,71 @@ import models.MySensor;
 import models.MyStation;
 
 public class InsertionService {
-	private Connection connection;
+	
 
-	public InsertionService(Connection connection) {
+	public InsertionService() {
 		super();
-		this.connection = connection;
 	}
 
-	public void insertDataCrawler(MyStation myStation) throws Exception {
-		// Sensorliste erstellen
-		SensorList sensorlist = myStation.getSensorList();
-		List<MySensor> mySensorList = myStation.getMySensorList();
-		OPCClientETS.getInstance().connectToMachine(myStation.getStation().getStation());
-		OPCClientETS.getInstance().setCrawlOffset(1000);
-		OPCClientETS.getInstance().browseOPCServer(sensorlist);
-		// Prepared Statement zum Einfügen von Daten erstellen
-		String insertSql = "INSERT INTO datacrawl (CrawlerID, StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?, ?)";
-		try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
-			byte[] buffer = new byte[1024];
-			int highestID = getHighestcrawlerID(connection);
+	public static void inserDataCrawler(Stationen station) throws Exception {
+		Connection connection =  DatabaseService.createConnection();
+	    // Sensorliste erstellen
+	    SensorList sensorlist = StationService.createSensorList(station);
+	    List<MySensor> rawList = DatabaseService.getSensorByStation(station);
+	    OPCClientETS.getInstance().connectToMachine(station.getStation());
+	    OPCClientETS.getInstance().setCrawlOffset(1000);
+	    OPCClientETS.getInstance().browseOPCServer(sensorlist);
 
-			while (true) {
-				// InputStream erhalten
-				InputStream in = OPCClientETS.getInstance().getInputStream();
+	    // BufferedReader erhalten
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(OPCClientETS.getInstance().getInputStream()));
 
-				// Lese Daten in den Puffer
-				int bytesRead = in.read(buffer);
-				if (bytesRead == -1) {
-					// Wenn das Ende des Streams erreicht ist, warten Sie kurz und fahren Sie fort
-					Thread.sleep(1000); // Warten Sie eine Sekunde und versuchen Sie es erneut
-					continue;
-				}
+	    // Datenbankverbindung herstellen
 
-				// Daten in String umwandeln
-				String data = new String(buffer, 0, bytesRead);
+	    // Prepared Statement zum Einfügen von Daten erstellen
+	    String insertSql = "INSERT INTO datacrawl (CrawlerID, StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?, ?)";
+	    try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
+	        int highestID = getHighestcrawlerID(connection);
 
-				// Teile den empfangenen String in Zeilen auf
-				String[] lines = data.split("\r\n|\r|\n");
+	        String line;
+	        int index = 0;
 
-				for (String line : lines) {
-					// Überprüfe, ob die Zeile den Sensor enthält
-					if (line.contains("Sensor:")) {
-						// Extrahiere die Sensorinformationen und entferne sie aus der Zeile
-						String sensorInfo = line.substring(line.indexOf("Sensor:"));
-						line = line.substring(0, line.indexOf("Sensor:"));
-					}
+	        while ((line = reader.readLine()) != null) {
+	            // Suche nach "--" als Trennzeichen
+	            if (line.startsWith("--")) {
+	                // Extrahiere die Zeile bis zum Trennzeichen
+	                String sensorLine = line.substring(2);
 
-					// Ausgabe des Werts (Value) aus der Zeile
-					if (line.contains("VALUE:")) {
-						String valueLine = line.split("VALUE: ")[1].trim();
-						highestID++;
-						statement.setInt(1, highestID);
-						statement.setInt(2, myStation.getStation().getStationID());
-						statement.setInt(3, mySensorList.get(0).getSensorId()); // Verwenden Sie immer den ersten Sensor													// in der Liste
-						statement.setInt(4, insertDataValueManuellID(connection, valueLine));
-						statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
-						statement.executeUpdate();
-						System.out.println(
-								"Erfolgreich zur Datenbank hinzugefügt: " + mySensorList.get(0).getBrowseName());
-					}
-				}
-			}
-		} finally {
-			OPCClientETS.getInstance().disconnect();
-		}
+	                // Überprüfe, ob die Zeile den Sensor enthält
+	                int sensorIndex = sensorLine.indexOf("Sensor:");
+	                if (sensorIndex != -1) {
+	                    // Extrahiere die Sensorinformationen und entferne sie aus der Zeile
+	                    String sensorInfo = sensorLine.substring(sensorIndex);
+	                    sensorLine = sensorLine.substring(0, sensorIndex);
+	                }
+
+	                // Ausgabe des Werts (Value) aus der Zeile
+	                String[] parts = sensorLine.split("VALUE: ");
+	                if (parts.length > 1) {
+	                    String valueLine = parts[1].trim();
+	                    highestID++;
+	                    statement.setInt(1, highestID);
+	                    statement.setInt(2, station.getStationID());
+	                    statement.setInt(3, rawList.get(index).getSensorId());
+	                    statement.setInt(4, insertDataValueManuellID(connection, valueLine));
+	                    statement.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
+	                    statement.executeUpdate();
+	                    System.out.println(
+	                            "Erfolgreich zur Datenbank hinzugefügt: " + rawList.get(index).getBrowseName());
+	                    index++;
+	                }
+	            }
+
+	            if (rawList.size() == index) {
+	                break;
+	            }
+	        }
+	    }
+	    OPCClientETS.getInstance().disconnect();
 	}
 
 	public static int insertDataValueManuellID(Connection connection, String rawValue) throws SQLException {
@@ -92,7 +95,6 @@ public class InsertionService {
 			statement.setString(3, null);
 			statement.setBoolean(4, true);
 			statement.executeUpdate();
-
 		}
 		return maxValueID;
 	}

@@ -14,7 +14,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import enums.Stationen;
+import models.MyStation;
 import services.DatabaseService;
+import services.InsertionService;
 import stationen.Bf;
 import stationen.Hl;
 import stationen.PR;
@@ -23,10 +25,20 @@ import stationen.Rl;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
+		
+		InsertionService insertionService = new InsertionService();
 	    
-		sequenceStart(20);
+		// sequenceStart(20);
+		
+		//DatabaseService.consoleMachine(Stationen.PL , DatabaseService.createConnection());
+		
+		parallelStart();
+	    
+	    // MyStation hf = new Hl();
 	    
 	    
+	    // insertionService.inserDataCrawler(Stationen.BF);
+	   
 	    
 	    
 	}
@@ -74,7 +86,7 @@ public class Main {
         // Parallele Ausführung der Prozesse für jede Station
         executor.submit(() -> {
 			try {
-				DatabaseService.inserDataCrawler(Stationen.RI,connection);
+				DatabaseService.consoleMachine(Stationen.RI,connection);
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -82,7 +94,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.inserDataCrawler(Stationen.BF, connection);
+				DatabaseService.consoleMachine(Stationen.BF, connection);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -90,7 +102,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.inserDataCrawler(Stationen.HL, connection);
+				DatabaseService.consoleMachine(Stationen.HL, connection);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -98,7 +110,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.inserDataCrawler(Stationen.PR, connection);
+				DatabaseService.consoleMachine(Stationen.PR, connection);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -106,7 +118,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.inserDataCrawler(Stationen.PL, connection);
+				DatabaseService.consoleMachine(Stationen.PL, connection);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

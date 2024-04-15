@@ -20,7 +20,7 @@ public abstract class MyStation {
 	protected SensorList sensorList;
 	protected  List<MySensor> mySensorList;
 	
-	private InsertionService insertionService = new InsertionService(DatabaseService.createConnection());
+	private InsertionService insertionService = new InsertionService();
 	
 	
 	protected MyStation(Stationen station ) {
@@ -38,7 +38,6 @@ public abstract class MyStation {
 
 	
 	public void startDatacrawl() throws Exception {
-		insertionService.insertDataCrawler(this);
 	}
 
 	public Stationen getStation() {
