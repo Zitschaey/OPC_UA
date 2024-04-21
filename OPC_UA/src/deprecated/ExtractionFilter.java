@@ -1,4 +1,4 @@
-package legacy_exctraction;
+package deprecated;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+@Deprecated
 
 public class ExtractionFilter {
 

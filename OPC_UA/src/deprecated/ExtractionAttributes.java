@@ -1,4 +1,4 @@
-package legacy_exctraction;
+package deprecated;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class ExtractionAttributes {
 	public static void main(String[] args) {
 		String inputFile = "OutputPR_FILTERED.txt";

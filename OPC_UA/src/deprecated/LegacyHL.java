@@ -1,4 +1,4 @@
-package legacy_exctraction;
+package deprecated;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -16,11 +16,12 @@ import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
 import models.MySensor;
 
-public class LegacyPL {
+@Deprecated
+public class LegacyHL {
 	public static void main(String[] args) {
 		MySensor extractor = new MySensor();
 
-		final String filePath = "OutputPL_FILTERED_ATTRIBUTES.txt";
+		final String filePath = "OutputHL_FILTERED_ATTRIBUTES.txt";
 		List<MySensor> sensorObjects = extractor.createSensorObjectsFromFile(filePath);
 		SensorList list = new SensorList();
 
@@ -29,13 +30,12 @@ public class LegacyPL {
 		}
 		try {
 
-			OPCClientETS.getInstance().connectToMachine(Station.PL);
+			OPCClientETS.getInstance().connectToMachine(Station.HL);
 			OPCClientETS.getInstance().setCrawlOffset(1000);
 			OPCClientETS.getInstance().browseOPCServer(list);
 
 			InputStream in = OPCClientETS.getInstance().getInputStream();
 
-			
 
 				byte[] buffer = new byte[1024];
 				int bytesRead;
@@ -44,7 +44,7 @@ public class LegacyPL {
 					System.out.println(data + "\n");
 
 				}
-
+			
 			OPCClientETS.getInstance().disconnect();
 
 		} catch (ServiceException | SecureIdentityException | IOException e) {
@@ -56,4 +56,5 @@ public class LegacyPL {
 		}
 
 	}
+
 }

@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import enums.Stationen;
 import models.MyStation;
 import services.DatabaseService;
-import services.InsertionService;
 import stationen.Bf;
 import stationen.Hl;
 import stationen.PR;
@@ -26,7 +25,6 @@ import stationen.Rl;
 public class Main {
 	public static void main(String[] args) throws Exception {
 		
-		InsertionService insertionService = new InsertionService();
 	    
 		// sequenceStart(20);
 		
@@ -78,15 +76,19 @@ public class Main {
 	}
 
 	public static void parallelStart() throws InterruptedException, SQLException, ExecutionException {
-		  String connStr = "jdbc:mysql://localhost:3306/testdatenbank";
-	        Connection connection = DriverManager.getConnection(connStr, "root", "");
+		 
+		MyStation bf = new Bf();
+		MyStation hl = new Hl();
+		MyStation pl = new Pl();
+		MyStation pr = new PR();
+		MyStation rl = new Rl();
 
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 
         // Parallele Ausführung der Prozesse für jede Station
         executor.submit(() -> {
 			try {
-				DatabaseService.consoleMachine(Stationen.RI,connection);
+				bf.startDatacrawl();
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -94,7 +96,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.consoleMachine(Stationen.BF, connection);
+				hl.startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -102,7 +104,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.consoleMachine(Stationen.HL, connection);
+				pl.startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -110,7 +112,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.consoleMachine(Stationen.PR, connection);
+				pr.startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -118,7 +120,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				DatabaseService.consoleMachine(Stationen.PL, connection);
+				rl.startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

@@ -1,4 +1,4 @@
-package legacy_exctraction;
+package deprecated;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -16,12 +16,12 @@ import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
 import models.MySensor;
 
-public class LegacyRL {
-
+@Deprecated
+public class LegacyPL {
 	public static void main(String[] args) {
 		MySensor extractor = new MySensor();
 
-		final String filePath = "OutputRL_FILTERED_ATTRIBUTES.txt";
+		final String filePath = "OutputPL_FILTERED_ATTRIBUTES.txt";
 		List<MySensor> sensorObjects = extractor.createSensorObjectsFromFile(filePath);
 		SensorList list = new SensorList();
 
@@ -30,19 +30,21 @@ public class LegacyRL {
 		}
 		try {
 
-			OPCClientETS.getInstance().connectToMachine(Station.RL);
+			OPCClientETS.getInstance().connectToMachine(Station.PL);
 			OPCClientETS.getInstance().setCrawlOffset(1000);
 			OPCClientETS.getInstance().browseOPCServer(list);
 
 			InputStream in = OPCClientETS.getInstance().getInputStream();
 
-			byte[] buffer = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = in.read(buffer)) != -1) {
-				String data = new String(buffer, 0, bytesRead);
-				System.out.println(data + "\n");
+			
 
-			}
+				byte[] buffer = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = in.read(buffer)) != -1) {
+					String data = new String(buffer, 0, bytesRead);
+					System.out.println(data + "\n");
+
+				}
 
 			OPCClientETS.getInstance().disconnect();
 
@@ -55,5 +57,4 @@ public class LegacyRL {
 		}
 
 	}
-
 }

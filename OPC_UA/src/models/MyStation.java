@@ -1,5 +1,6 @@
 package models;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,6 @@ import de.judge.opc_ets.SensorList;
 import de.judge.opc_ets.Station;
 import enums.Stationen;
 import services.DatabaseService;
-import services.InsertionService;
 import services.StationService;
 
 public abstract class MyStation {
@@ -20,8 +20,6 @@ public abstract class MyStation {
 	protected SensorList sensorList;
 	protected  List<MySensor> mySensorList;
 	
-	private InsertionService insertionService = new InsertionService();
-	
 	
 	protected MyStation(Stationen station ) {
 		super();
@@ -29,7 +27,7 @@ public abstract class MyStation {
 		this.bezeichnung = station.getStation().getID();
 		try {
 			this.sensorList =  StationService.createSensorList(station);
-			this.mySensorList = DatabaseService.getSensorByStation(station);
+			this.mySensorList = DatabaseService.getMySensorList(station);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,6 +36,7 @@ public abstract class MyStation {
 
 	
 	public void startDatacrawl() throws Exception {
+		DatabaseService.persistDatacrawl(this);
 	}
 
 	public Stationen getStation() {

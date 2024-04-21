@@ -1,37 +1,17 @@
 package services;
 
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-import de.judge.opc_ets.OPCClientETS;
+
 import de.judge.opc_ets.SensorList;
 import enums.Stationen;
 import models.MySensor;
 
 public class StationService {
 
-	public static void createConnection(Stationen station) throws Exception {
-
-		SensorList sensorlist = createSensorList(station);
-		OPCClientETS.getInstance().connectToMachine(station.getStation());
-		OPCClientETS.getInstance().setCrawlOffset(1000);
-		OPCClientETS.getInstance().browseOPCServer(sensorlist);
-
-		InputStream in = OPCClientETS.getInstance().getInputStream();
-
-		byte[] buffer = new byte[50000];
-		int bytesRead;
-		while ((bytesRead = in.read(buffer)) != -1) {
-			String data = new String(buffer, 0, bytesRead);
-			System.out.println(data + "\n");
-		}
-
-		OPCClientETS.getInstance().disconnect();
-	}
-
 	public static SensorList createSensorList(Stationen station) throws SQLException {
-		List<MySensor> sensorObjects = DatabaseService.getSensorByStation(station);
+		List<MySensor> sensorObjects = DatabaseService.getMySensorList(station);
 		SensorList list = new SensorList();
 
 		for (MySensor sensorObj : sensorObjects) {
