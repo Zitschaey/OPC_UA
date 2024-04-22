@@ -1,4 +1,4 @@
-package services;
+package database_managment;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

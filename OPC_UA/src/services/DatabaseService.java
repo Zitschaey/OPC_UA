@@ -7,6 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import database_managment.DatabaseConnectionManager;
 import de.judge.opc_ets.OPCClientETS;
 import de.judge.opc_ets.SensorList;
 import enums.Stationen;

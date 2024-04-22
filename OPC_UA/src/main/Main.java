@@ -23,37 +23,10 @@ import stationen.Pl;
 import stationen.Rl;
 
 public class Main {
-	public static void main(String[] args) throws Exception {
-		
-	    
-		// sequenceStart(20);
-		
-		//DatabaseService.consoleMachine(Stationen.PL , DatabaseService.createConnection());
-		
-		parallelStart();
-	    
-	    // MyStation hf = new Hl();
-	    
-	    
-	    // insertionService.inserDataCrawler(Stationen.BF);
-	   
-	    
-	    
+	public static void main(String[] args) throws Exception {	
+		parallelStart();   
 	}
-	// DataCrawl über die Stationsobjekte straten
-
-	// bfAnlange.startDatacrawl();
-	// hlAnlange.startDatacrawl();+
-	// bfAnlange.startDatacrawl();
-	// plAnlage.startDatacrawl();
-	// prAnlage.startDatacrawl();
-	// rlAnlage.startDatacrawl();
-
-	// Datacrawl über den DatabaseService starten (alle Sensoren)
-	// DatabaseService.inserDataCrawler(Stationen.HL);
-
-	// Datacrawl über den DatabaseService starten (einzelner Sensor mit ID)
-	// DatabaseService.inserDataCrawler(Stationen.BF, 1);
+	
 
 	public static void sequenceStart(int durationInMinutes) throws InterruptedException {
 
