@@ -1,4 +1,4 @@
-package stationen;
+package station_instances;
 
 
 import enums.Stationen;

@@ -21,12 +21,12 @@ public class DatabaseService {
 		var connection = DatabaseConnectionManager.createConnection();
 		var sensorlist = myStation.getSensorList();
 		var rawList = myStation.getMySensorList();
-		OPCClientETS.getInstance().connectToMachine(myStation.getStation().getStation());
-		OPCClientETS.getInstance().setCrawlOffset(500);
-		OPCClientETS.getInstance().browseOPCServer(sensorlist);
-
+		OPCClientETS opcClient = new OPCClientETS(myStation.getStation().getStation());
+		opcClient.setCrawlOffset(0);
+		opcClient.browseOPCServer(sensorlist);
+		
 		// InputStream erhalten
-		var in = OPCClientETS.getInstance().getInputStream();
+		var in = opcClient.getInputStream();
 
 		// Prepared Statement zum Einfügen von Daten erstellen
 		var insertSql = "INSERT INTO datacrawl (StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?)";
@@ -81,17 +81,19 @@ public class DatabaseService {
 			// Setze den Autocommit-Modus wieder auf true
 			connection.setAutoCommit(true);
 
-			OPCClientETS.getInstance().disconnect();
+			opcClient.getInstance().disconnect();
 			connection.close();
 		}
 	}
 
 	public static int persistDatavalue(String rawValue, Connection connection) throws SQLException {
 		var insertSql = "INSERT INTO datavalue (Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?)";
+		
+		var filteredValue = FilterService.filterDataValue(rawValue);
 
 		var maxValueID = -1; // Standardwert für den Fall, dass keine ID generiert wird
 		try (PreparedStatement statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, rawValue);
+			statement.setString(1, filteredValue);
 			statement.setString(2, null);
 			statement.setBoolean(3, true);
 			statement.executeUpdate();

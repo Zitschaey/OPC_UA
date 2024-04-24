@@ -10,7 +10,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+
 public class FilterService {
+	
+	public static void main(String[] args) {
+		
+		 String input = "VALUE: DataValue(value=false, statusCode=GOOD (0x040000) \"The node id refers to a node that does not exist in the server address space.\")";
+
+		System.out.println(filterDataValue(input)); 
+	}
+		
+	
 	
 	private static void filterFirstData (String inputFileName, String outputFileName) throws IOException {
 		try (BufferedReader br = new BufferedReader(new FileReader(inputFileName));
@@ -61,5 +72,20 @@ public class FilterService {
 		}
 	}
 	
-
+	
+	  public static String filterDataValue(String input) {
+	        int startIndex = input.indexOf("VALUE: DataValue(");
+	        if (startIndex == -1) {
+	            return input;
+	        }
+	        int firstClosingIndex = input.indexOf(")", startIndex + "VALUE: DataValue(".length());
+	        if (firstClosingIndex == -1) {
+	            return input;
+	        }
+	        int secondClosingIndex = input.indexOf(")", firstClosingIndex + 1);
+	        if (secondClosingIndex == -1) {
+	            return input;
+	        }
+	        return input.substring(startIndex + "VALUE: DataValue(".length(), secondClosingIndex);
+	    }
 }

@@ -1,4 +1,4 @@
-package stationen;
+package station_instances;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -21,8 +21,9 @@ import models.MyStation;
 import services.DatabaseService;
 import services.StationService;
 
-public class Pl extends MyStation {
-	public Pl(){
-		super(Stationen.PL);
+public class Pr extends MyStation {
+	public Pr(){
+		super(Stationen.PR);
 	}
+
 }

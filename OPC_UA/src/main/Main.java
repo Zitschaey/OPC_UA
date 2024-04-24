@@ -13,14 +13,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import anlage_instances.EtsDidacticAnlage;
 import enums.Stationen;
+import models.Anlage;
 import models.MyStation;
 import services.DatabaseService;
-import stationen.Bf;
-import stationen.Hl;
-import stationen.PR;
-import stationen.Pl;
-import stationen.Rl;
+import station_instances.Bf;
+import station_instances.Hl;
+import station_instances.Pr;
+import station_instances.Pl;
+import station_instances.Rl;
 
 public class Main {
 	public static void main(String[] args) throws Exception {	
@@ -50,18 +52,14 @@ public class Main {
 
 	public static void parallelStart() throws InterruptedException, SQLException, ExecutionException {
 		 
-		MyStation bf = new Bf();
-		MyStation hl = new Hl();
-		MyStation pl = new Pl();
-		MyStation pr = new PR();
-		MyStation rl = new Rl();
+	Anlage etsDidactic = new EtsDidacticAnlage();
 
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 
         // Parallele Ausführung der Prozesse für jede Station
         executor.submit(() -> {
 			try {
-				bf.startDatacrawl();
+				etsDidactic.getStationList()[0].startDatacrawl();
 			} catch (Exception e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -69,7 +67,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				hl.startDatacrawl();
+				etsDidactic.getStationList()[1].startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -77,7 +75,16 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				pl.startDatacrawl();
+				etsDidactic.getStationList()[2].startDatacrawl();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+        
+        executor.submit(() -> {
+			try {
+				etsDidactic.getStationList()[3].startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -85,15 +92,7 @@ public class Main {
 		});
         executor.submit(() -> {
 			try {
-				pr.startDatacrawl();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		});
-        executor.submit(() -> {
-			try {
-				rl.startDatacrawl();
+				etsDidactic.getStationList()[4].startDatacrawl();
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
