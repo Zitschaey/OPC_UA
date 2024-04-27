@@ -5,10 +5,10 @@ import de.judge.opc_ets.Station;
 
 import java.io.*;
 
-@Deprecated
-public class Client {
 
-    public static void main(String[] args) {
+@Deprecated
+public class ExtractorService {
+    public void extractUnfilteredData(String outputName) {
         try {
             OPCClientETS.getInstance().connectToMachine(Station.PR);
             OPCClientETS.getInstance().browseOPCServer();
@@ -16,13 +16,12 @@ public class Client {
 
             InputStream in = OPCClientETS.getInstance().getInputStream();
 
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("outputPR.txt")))) {
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputName)))) {
+
                 byte[] buffer = new byte[1024];
                 int bytesRead;
                 while ((bytesRead = in.read(buffer)) != -1) {
                     String data = new String(buffer, 0, bytesRead);
-
-
                     writer.write(data + "\n");
                 }
             }
@@ -32,4 +31,6 @@ public class Client {
             e.printStackTrace();
         }
     }
+
+
 }
