@@ -10,12 +10,14 @@ import java.util.List;
 
 public class MyStationService {
 
+    public static final DatabaseService DATABASE_SERVICE = new DatabaseService();
+
     public static void persistDatacrawl(MyStation myStation) throws Exception {
-        DatabaseService.persistDatacrawl(myStation);
+        DATABASE_SERVICE.persistDatacrawl(myStation);
     }
 
     public static List<MySensor> createMySensorList(Stationen station) throws SQLException {
-        return DatabaseService.getMySensorList(station);
+        return DATABASE_SERVICE.getMySensorList(station);
 
     }
 

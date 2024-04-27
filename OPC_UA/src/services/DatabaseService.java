@@ -15,6 +15,7 @@ import java.util.List;
 public class DatabaseService {
 
     public static final DatabaseConnectionManager DATABASE_CONNECTION_MANAGER = new DatabaseConnectionManager();
+    public static final FilterService FILTER_SERVICE = new FilterService();
 
     public static void persistDatacrawl(MyStation myStation) throws Exception {
         var connection = DATABASE_CONNECTION_MANAGER.createConnection();
@@ -88,7 +89,7 @@ public class DatabaseService {
     public static int persistDatavalue(String rawValue, Connection connection) throws SQLException {
         var insertSql = "INSERT INTO datavalue (Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?)";
 
-        var filteredValue = FilterService.filterDataValue(rawValue);
+        var filteredValue = FILTER_SERVICE.filterDataValue(rawValue);
 
         var maxValueID = -1; // Standardwert für den Fall, dass keine ID generiert wird
         try (PreparedStatement statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {

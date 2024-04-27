@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class MyStation {
+    private static final MyStationService MY_STATION_SERVICE = new MyStationService();
 
     protected Stationen station;
 
@@ -24,8 +25,8 @@ public abstract class MyStation {
         this.station = station;
         this.bezeichnung = station.getStation().getID();
         try {
-            this.sensorList = MyStationService.createSensorList(station);
-            this.mySensorList = MyStationService.createMySensorList(station);
+            this.sensorList = MY_STATION_SERVICE.createSensorList(station);
+            this.mySensorList = MY_STATION_SERVICE.createMySensorList(station);
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
