@@ -1,13 +1,13 @@
 package station_instances;
 
 
-import enums.Stationen;
+import enums.Stations;
 import models.MyStation;
 
 
 public class Hl extends MyStation {
     public Hl() {
-        super(Stationen.HL);
+        super(Stations.HL);
     }
 
 }

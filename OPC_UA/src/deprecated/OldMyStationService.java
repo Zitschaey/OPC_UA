@@ -1,7 +1,7 @@
 package deprecated;
 
 import de.judge.opc_ets.SensorList;
-import enums.Stationen;
+import enums.Stations;
 import models.MySensor;
 import models.MyStation;
 import services.DatabaseService;
@@ -16,13 +16,13 @@ public class OldMyStationService {
         DatabaseService.persistDatacrawl(myStation);
     }
 
-    public static List<MySensor> createMySensorList(Stationen station) throws SQLException {
+    public static List<MySensor> createMySensorList(Stations station) throws SQLException {
         return DatabaseService.getMySensorList(station);
 
     }
 
 
-    public static SensorList createSensorList(Stationen station) throws SQLException {
+    public static SensorList createSensorList(Stations station) throws SQLException {
         List<MySensor> sensorObjects = DatabaseService.getMySensorList(station);
         SensorList list = new SensorList();
 

@@ -1,7 +1,7 @@
 package services;
 
 import de.judge.opc_ets.SensorList;
-import enums.Stationen;
+import enums.Stations;
 import models.MySensor;
 import models.MyStation;
 
@@ -16,13 +16,13 @@ public class MyStationService {
         DATABASE_SERVICE.persistDatacrawl(myStation);
     }
 
-    public static List<MySensor> createMySensorList(Stationen station) throws SQLException {
+    public static List<MySensor> createMySensorList(Stations station) throws SQLException {
         return DATABASE_SERVICE.getMySensorList(station);
 
     }
 
 
-    public static SensorList createSensorList(Stationen station) throws SQLException {
+    public static SensorList createSensorList(Stations station) throws SQLException {
         List<MySensor> sensorObjects = DatabaseService.getMySensorList(station);
         SensorList list = new SensorList();
 

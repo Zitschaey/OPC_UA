@@ -1,11 +1,11 @@
 package station_instances;
 
-import enums.Stationen;
+import enums.Stations;
 import models.MyStation;
 
 public class Pr extends MyStation {
     public Pr() {
-        super(Stationen.PR);
+        super(Stations.PR);
     }
 
 }

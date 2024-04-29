@@ -2,7 +2,7 @@ package services;
 
 import database_managment.DatabaseConnectionManager;
 import de.judge.opc_ets.OPCClientETS;
-import enums.Stationen;
+import enums.Stations;
 import models.MySensor;
 import models.MyStation;
 
@@ -107,7 +107,7 @@ public class DatabaseService {
         return maxValueID;
     }
 
-    public static List<MySensor> getMySensorList(Stationen station) throws SQLException {
+    public static List<MySensor> getMySensorList(Stations station) throws SQLException {
         List<MySensor> mySensorList = new ArrayList<>();
         var connection = DATABASE_CONNECTION_MANAGER.createConnection();
         var sql = "SELECT * FROM sensor WHERE StationID = ?";

@@ -1,7 +1,7 @@
 package models;
 
 import de.judge.opc_ets.SensorList;
-import enums.Stationen;
+import enums.Stations;
 import services.DatabaseService;
 import services.MyStationService;
 
@@ -12,14 +12,14 @@ import java.util.List;
 public abstract class MyStation {
     private static final MyStationService MY_STATION_SERVICE = new MyStationService();
 
-    protected Stationen station;
+    protected Stations station;
     protected String description;
     protected System system;
     protected ArrayList<Alarm> alarms;
     protected SensorList sensorList;
     protected List<MySensor> mySensorList;
 
-    protected MyStation(Stationen station) {
+    protected MyStation(Stations station) {
         super();
         this.station = station;
         this.description = station.getStation().getID();
@@ -36,11 +36,11 @@ public abstract class MyStation {
         DatabaseService.persistDatacrawl(this);
     }
 
-    public Stationen getStation() {
+    public Stations getStation() {
         return station;
     }
 
-    public void setStation(Stationen station) {
+    public void setStation(Stations station) {
         this.station = station;
     }
 

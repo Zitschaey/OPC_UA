@@ -3,7 +3,7 @@ package deprecated;
 import database_managment.DatabaseConnectionManager;
 import de.judge.opc_ets.OPCClientETS;
 import de.judge.opc_ets.SensorList;
-import enums.Stationen;
+import enums.Stations;
 import models.MySensor;
 import models.MyStation;
 import services.FilterService;
@@ -115,7 +115,7 @@ public class OldDatabaseService {
         return maxValueID;
     }
 
-    public static List<MySensor> getMySensorList(Stationen station) throws SQLException {
+    public static List<MySensor> getMySensorList(Stations station) throws SQLException {
         List<MySensor> mySensorList = new ArrayList<>();
         var connection = DATABASE_CONNECTION_MANAGER.createConnection();
         var sql = "SELECT * FROM sensor WHERE StationID = ?";
@@ -153,7 +153,7 @@ public class OldDatabaseService {
         }
     }
 
-    public static void consoleMachine(Stationen station) throws Exception {
+    public static void consoleMachine(Stations station) throws Exception {
 
         // Sensorliste erstellen
         SensorList sensorlist = MyStationService.createSensorList(station);
@@ -203,7 +203,7 @@ public class OldDatabaseService {
         }
     }
 
-    public static void inserDataCrawler(Stationen station, int id) throws Exception {
+    public static void inserDataCrawler(Stations station, int id) throws Exception {
 
         // Sensorliste erstellen
         SensorList sensorlist = OldMyStationService.createSensorListForOne(id);
@@ -275,7 +275,7 @@ public class OldDatabaseService {
         OPCClientETS.getInstance().disconnect();
     }
 
-    public static void inserDataCrawler(Stationen station, Connection connection) throws Exception {
+    public static void inserDataCrawler(Stations station, Connection connection) throws Exception {
         // Sensorliste erstellen
         SensorList sensorlist = MyStationService.createSensorList(station);
         List<MySensor> rawList = OldDatabaseService.getMySensorList(station);
@@ -341,7 +341,7 @@ public class OldDatabaseService {
     }
 
     @Deprecated
-    public static void inserDataCrawler(Stationen station) throws Exception {
+    public static void inserDataCrawler(Stations station) throws Exception {
 
         // Sensorliste erstellen
         SensorList sensorlist = MyStationService.createSensorList(station);
