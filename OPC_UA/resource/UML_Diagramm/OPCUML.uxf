@@ -1,67 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1.0">
-  <zoom_level>5</zoom_level>
+  <zoom_level>3</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>250</x>
-      <y>345</y>
-      <w>215</w>
-      <h>90</h>
+      <x>1038</x>
+      <y>174</y>
+      <w>129</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>MySensor
 --
-browseName: String
-nodeId: int
-station: MyStation
+- browseName: String
+- sensorId: int
+- nodeId: int
+- station: MyStation
 --
-+ MySensor(browseName: String, nodeId: int)
-+ MySensor()
-+ createSensorObjectsFromFile(filePath: String): List&lt;MySensor&gt;
++ MySensor(String, int):
++ MySensor():
++ MySensor(String, int, MyStation)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>250</x>
-      <y>185</y>
-      <w>220</w>
-      <h>120</h>
+      <x>750</x>
+      <y>285</y>
+      <w>132</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>MyStation
 --
-stationName: String
-station: Station
-stationsId: int
-anlage: Anlage
-alarms: ArrayList&lt;Alarm&gt;
-sensors: ArrayList&lt;MySensor&gt;
+- MY_STATION_SERVICE: MyStationService
+# station: Stationen
+# anlage: Anlage
+# mySensorList: List&lt;MySensor&gt;
+# bezeichnung: String
+# sensorList: SensorList
+# alarms: ArrayList&lt;Alarm&gt;
 --
-+ MyStation(stationName: String, station: Station, stationsId: int,
-anlage: Anlage, alarms: ArrayList&lt;Alarm&gt;,
-sensors: ArrayList&lt;MySensor&gt;)
-+ MyStation(stationName: String, station: Station, anlage: Anlage)
-+ addSensor(sensor: MySensor): void
-+ addAlarm(alarm: Alarm): void
++ startDatacrawl(): void
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>560</x>
-      <y>185</y>
-      <w>145</w>
-      <h>85</h>
+      <x>516</x>
+      <y>360</y>
+      <w>87</w>
+      <h>51</h>
     </coordinates>
     <panel_attributes>Anlage
 --
-stations: ArrayList&lt;MyStation&gt;
-orders: ArrayList&lt;Order&gt;
-name: String
-status: String
-aktuelleProduktionsrate: double
+- orders: ArrayList&lt;Order&gt;
+- status: String
+- aktuelleProduktionsrate: double
+- myStations: MyStation[]
+- name: String
 --
 + Anlage(name: String)
 + addStation(station: MyStation): void
@@ -72,35 +69,37 @@ aktuelleProduktionsrate: double
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>40</x>
-      <y>185</y>
-      <w>105</w>
-      <h>80</h>
+      <x>669</x>
+      <y>174</y>
+      <w>63</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>Alarm
 --
-dauer: long
-datum: Date
-fehlermeldung: String
---</panel_attributes>
+- dauer: long
+- station: MyStation
+- datum: Date
+- fehlermeldung: String
+--
++ Alarm():</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>465</x>
-      <y>25</y>
-      <w>230</w>
-      <h>90</h>
+      <x>486</x>
+      <y>264</y>
+      <w>138</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>Order
 --
-anzahlKugel: int[]
-deckelFarbe: String
-orderId: int
-status: String
-time: long
-anlage: Anlage
+- deckelFarbe: String
+- status: String
+- orderId: int
+- anzahlKugel: int[]
+- anlage: Anlage
+- time: long
 --
 + Order(anzahlKugel: int[], deckelFarbe: String, anlage: Anlage)
 </panel_attributes>
@@ -109,75 +108,436 @@ anlage: Anlage
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>465</x>
-      <y>220</y>
-      <w>105</w>
-      <h>20</h>
+      <x>858</x>
+      <y>225</y>
+      <w>255</w>
+      <h>66</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
 m2=*
 m1=1</panel_attributes>
-    <additional_attributes>190.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>10.0;200.0;10.0;120.0;830.0;120.0;830.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>295</x>
-      <y>300</y>
-      <w>20</w>
-      <h>55</h>
+      <x>696</x>
+      <y>219</y>
+      <w>102</w>
+      <h>72</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
 m2=*
 m1=1</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+    <additional_attributes>310.0;220.0;310.0;110.0;10.0;110.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>140</x>
-      <y>220</y>
-      <w>120</w>
-      <h>20</h>
+      <x>555</x>
+      <y>315</y>
+      <w>12</w>
+      <h>51</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
-m2=*
-m1=1</panel_attributes>
-    <additional_attributes>220.0;10.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>605</x>
-      <y>110</y>
-      <w>20</w>
-      <h>85</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
 m2=*
 m1=1</panel_attributes>
     <additional_attributes>10.0;150.0;10.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
+    <id>UMLClass</id>
     <coordinates>
-      <x>0</x>
-      <y>0</y>
-      <w>95</w>
-      <h>15</h>
+      <x>750</x>
+      <y>84</y>
+      <w>129</w>
+      <h>54</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+    <panel_attributes>DatabaseService
+--
++ DATABASE_CONNECTION_MANAGER: DatabaseConnectionManager
++ FILTER_SERVICE: FilterService
+--
++ getMySensorList(Stationen): List&lt;MySensor&gt;
++ persistDatacrawl(MyStation): void
++ persistDatavalue(String, Connection): int
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>678</x>
+      <y>0</y>
+      <w>129</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>DatabaseConnectionManager
+--
+
+--
++ DatabaseConnectionManager():
++ createConnection(): Connection
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>819</x>
+      <y>0</y>
+      <w>129</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>FilterService
+--
+
+--
++ FilterService():
++ filterSecondData(String, String): void
++ filterFirstData(String, String): void
++ filterDataValue(String): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>750</x>
+      <y>174</y>
+      <w>129</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>MyStationService
+--
++ DATABASE_SERVICE: DatabaseService
+--
++ persistDatacrawl(MyStation): void
++ createSensorList(Stationen): SensorList
++ createMySensorList(Stationen): List&lt;MySensor&gt;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>894</x>
+      <y>174</y>
+      <w>129</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enumeration&gt;&gt;
+Stationen
+--
++ PR:
++ RI:
++ HL:
++ BF:
++ PL:
+- stationID: int
+- station: Station
+--
+- Stationen(Station, int):
+</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>10</x>
-      <y>10</y>
-      <w>95</w>
-      <h>15</h>
+      <x>801</x>
+      <y>225</y>
+      <w>12</w>
+      <h>66</h>
     </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>714</x>
+      <y>405</y>
+      <w>33</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Hl
+--
+hl()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>759</x>
+      <y>405</y>
+      <w>33</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Rl
+--
+rl()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>804</x>
+      <y>405</y>
+      <w>33</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Pl
+--
+Pl()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>852</x>
+      <y>405</y>
+      <w>33</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Bf
+--
+hl()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>897</x>
+      <y>405</y>
+      <w>33</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>Pr
+--
+pr()
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>726</x>
+      <y>381</y>
+      <w>9</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>771</x>
+      <y>381</y>
+      <w>9</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>816</x>
+      <y>381</y>
+      <w>9</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>864</x>
+      <y>381</y>
+      <w>9</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>909</x>
+      <y>381</y>
+      <w>9</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>726</x>
+      <y>378</y>
+      <w>192</w>
+      <h>12</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>620.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>816</x>
+      <y>354</y>
+      <w>9</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>408</x>
+      <y>462</y>
+      <w>132</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>ParallelTaskExecutor
+--
+- anlage: Anlage
+--
++ ParallelTaskExecutor(Anlage):
++ executeParallelTasks(): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>579</x>
+      <y>462</y>
+      <w>132</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>EtsDidacticAnlage
+--
+
+--
++ MyStation(stationName: String, statio</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>405</x>
+      <y>564</y>
+      <w>132</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>Main
+--
++ Main()
+--
++ main(String[]): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>780</x>
+      <y>51</y>
+      <w>9</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>846</x>
+      <y>51</y>
+      <w>9</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>810</x>
+      <y>135</y>
+      <w>9</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>831</x>
+      <y>225</y>
+      <w>138</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;80.0;440.0;80.0;440.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>582</x>
+      <y>258</y>
+      <w>195</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-&gt;
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>620.0;90.0;620.0;10.0;390.0;10.0;390.0;260.0;10.0;260.0;10.0;340.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>585</x>
+      <y>408</y>
+      <w>66</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0;200.0;100.0;200.0;180.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>471</x>
+      <y>408</y>
+      <w>72</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-&gt;
+m2=*
+m1=1</panel_attributes>
+    <additional_attributes>10.0;180.0;10.0;90.0;220.0;90.0;220.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>531</y>
+      <w>9</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes>10.0;10.0;10.0;110.0</additional_attributes>
   </element>
 </diagram>
