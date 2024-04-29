@@ -13,9 +13,8 @@ public abstract class MyStation {
     private static final MyStationService MY_STATION_SERVICE = new MyStationService();
 
     protected Stationen station;
-
-    protected String bezeichnung;
-    protected System anlage;
+    protected String description;
+    protected System system;
     protected ArrayList<Alarm> alarms;
     protected SensorList sensorList;
     protected List<MySensor> mySensorList;
@@ -23,7 +22,7 @@ public abstract class MyStation {
     protected MyStation(Stationen station) {
         super();
         this.station = station;
-        this.bezeichnung = station.getStation().getID();
+        this.description = station.getStation().getID();
         try {
             this.sensorList = MY_STATION_SERVICE.createSensorList(station);
             this.mySensorList = MY_STATION_SERVICE.createMySensorList(station);
@@ -46,19 +45,19 @@ public abstract class MyStation {
     }
 
     public String getBezeichnung() {
-        return bezeichnung;
+        return description;
     }
 
     public void setBezeichnung(String bezeichnung) {
-        this.bezeichnung = bezeichnung;
+        this.description = bezeichnung;
     }
 
     public System getAnlage() {
-        return anlage;
+        return system;
     }
 
     public void setAnlage(System anlage) {
-        this.anlage = anlage;
+        this.system = anlage;
     }
 
     public ArrayList<Alarm> getAlarms() {

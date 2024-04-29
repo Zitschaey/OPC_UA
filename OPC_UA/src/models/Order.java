@@ -6,13 +6,13 @@ public class Order {
     private int orderId;
     private String status;
     private long time;
-    private System anlage;
+    private System system;
 
-    public Order(int[] anzahlKugel, String deckelFarbe, System anlage) {
+    public Order(int[] countBullet, String coverColour, System anlage) {
         super();
-        this.countBullet = anzahlKugel;
-        this.coverColour = deckelFarbe;
-        this.anlage = anlage;
+        this.countBullet = countBullet;
+        this.coverColour = coverColour;
+        this.system = system;
     }
 
     public int[] getAnzahlKugel() {
@@ -24,11 +24,11 @@ public class Order {
     }
 
     public System getAnlage() {
-        return anlage;
+        return system;
     }
 
     public void setAnlage(System anlage) {
-        this.anlage = anlage;
+        this.system = anlage;
     }
 
     public String getDeckelFarbe() {

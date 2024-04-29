@@ -5,7 +5,7 @@ import java.util.Date;
 public class Alarm {
 
     private long dauer;
-    private Date datum;
+    private Date date;
     private String fehlermeldung;
     private MyStation station;
 
@@ -18,11 +18,11 @@ public class Alarm {
     }
 
     public Date getDatum() {
-        return datum;
+        return date;
     }
 
     public void setDatum(Date datum) {
-        this.datum = datum;
+        this.date = datum;
     }
 
     public String getFehlermeldung() {
