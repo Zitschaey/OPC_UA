@@ -15,7 +15,7 @@ public abstract class MyStation {
     protected Stationen station;
 
     protected String bezeichnung;
-    protected Anlage anlage;
+    protected System anlage;
     protected ArrayList<Alarm> alarms;
     protected SensorList sensorList;
     protected List<MySensor> mySensorList;
@@ -53,11 +53,11 @@ public abstract class MyStation {
         this.bezeichnung = bezeichnung;
     }
 
-    public Anlage getAnlage() {
+    public System getAnlage() {
         return anlage;
     }
 
-    public void setAnlage(Anlage anlage) {
+    public void setAnlage(System anlage) {
         this.anlage = anlage;
     }
 

@@ -2,15 +2,15 @@ package models;
 
 import java.util.ArrayList;
 
-public abstract class Anlage {
+public abstract class System {
 
     private MyStation[] myStations;
     private ArrayList<Order> orders;
     private String name;
     private String status;
-    private double aktuelleProduktionsrate;
+    private double currentProductionrate;
 
-    public Anlage(MyStation[] stationList, String name) {
+    public System(MyStation[] stationList, String name) {
         super();
         this.myStations = stationList;
         this.name = name;
@@ -49,11 +49,11 @@ public abstract class Anlage {
     }
 
     public double getAktuelleProduktionsrate() {
-        return aktuelleProduktionsrate;
+        return currentProductionrate;
     }
 
     public void setAktuelleProduktionsrate(double aktuelleProduktionsrate) {
-        this.aktuelleProduktionsrate = aktuelleProduktionsrate;
+        this.currentProductionrate = aktuelleProduktionsrate;
     }
 
 

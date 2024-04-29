@@ -1,26 +1,26 @@
 package multithreading;
 
-import models.Anlage;
+import models.System;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class ParallelTaskExecutor {
-    private Anlage anlage;
+    private System system;
 
-    public ParallelTaskExecutor(Anlage anlage) {
-        this.anlage = anlage;
+    public ParallelTaskExecutor(System system) {
+        this.system = system;
     }
 
     public void executeParallelTasks() {
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
-        for (int i = 0; i < anlage.getStationList().length; i++) {
-            int stationIndex = i; // to make it effectively final for lambda
+        for (int i = 0; i < system.getStationList().length; i++) {
+            int stationIndex = i; 
             executor.submit(() -> {
                 try {
-                    anlage.getStationList()[stationIndex].startDatacrawl();
+                    system.getStationList()[stationIndex].startDatacrawl();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -35,11 +35,11 @@ public class ParallelTaskExecutor {
         }
     }
 
-    public Anlage getAnlage() {
-        return anlage;
+    public System getAnlage() {
+        return system;
     }
 
-    public void setAnlage(Anlage anlage) {
-        this.anlage = anlage;
+    public void setAnlage(System anlage) {
+        this.system = anlage;
     }
 }

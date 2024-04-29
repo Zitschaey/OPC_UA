@@ -25,13 +25,13 @@ public class DatabaseService {
         opcClient.setCrawlOffset(0);
         opcClient.browseOPCServer(sensorlist);
 
-        // InputStream erhalten
+    
         var in = opcClient.getInputStream();
 
-        // Prepared Statement zum Einfügen von Daten erstellen
+       
         var insertSql = "INSERT INTO datacrawl (StationID, SensorID, ValueID, Uhrzeit) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
-            // Starte eine Transaktion
+          
             connection.setAutoCommit(false);
 
             var reader = new BufferedReader(new InputStreamReader(in));
@@ -40,15 +40,15 @@ public class DatabaseService {
             var batchSize = 100;
 
             while ((line = reader.readLine()) != null) {
-                // Filtern nach Zeilen, die "VALUE: DataValue" enthalten
+                
                 if (line.contains("VALUE: DataValue")) {
-                    // Hier kannst du die Verarbeitung der Zeile vornehmen
+                   
                     String valueLine = line.substring(line.indexOf("VALUE:")).trim();
 
                     statement.setInt(1, myStation.getStation().getStationID());
                     statement.setInt(2, rawList.get(index).getSensorId());
                     statement.setInt(3, persistDatavalue(valueLine, connection));
-                    statement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // Aktuelle Uhrzeit
+                    statement.setTimestamp(4, new Timestamp(System.currentTimeMillis())); 
                     statement.addBatch();
 
                     System.out.println(
@@ -56,31 +56,28 @@ public class DatabaseService {
 
                     index++;
 
-                    // Wenn die Batch-Größe erreicht ist oder alle Sensoren durchlaufen sind, führe
-                    // die Batch-Operation aus und leere sie
+                 
                     if (index % batchSize == 0 || index == rawList.size()) {
                         statement.executeBatch();
-                        connection.commit(); // Bestätige die Transaktion
+                        connection.commit();
                         statement.clearBatch();
                         System.out
                                 .println("Batch-Operation ausgeführt, für die Anlage: " + myStation.getStation().getStation().getID());
                     }
 
-                    // Wenn alle Sensoren durchlaufen sind, setze den Index zurück und breche die
-                    // innere Schleife ab
+                  
                     if (index == rawList.size()) {
                         index = 0;
                     }
                 }
             }
         } catch (SQLException e) {
-            // Bei Fehler Rollback der Transaktion
+           
             connection.rollback();
             throw e;
         } finally {
-            // Setze den Autocommit-Modus wieder auf true
+           
             connection.setAutoCommit(true);
-
             opcClient.getInstance().disconnect();
             connection.close();
         }
@@ -91,17 +88,17 @@ public class DatabaseService {
 
         var filteredValue = FILTER_SERVICE.filterDataValue(rawValue);
 
-        var maxValueID = -1; // Standardwert für den Fall, dass keine ID generiert wird
+        var maxValueID = -1; 
         try (PreparedStatement statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, filteredValue);
             statement.setString(2, null);
             statement.setBoolean(3, true);
             statement.executeUpdate();
 
-            // Holen Sie sich die generierten Schlüssel
+          
             try (var generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    maxValueID = generatedKeys.getInt(1); // Erste Spalte enthält den generierten Schlüsselwert
+                    maxValueID = generatedKeys.getInt(1); 
                 } else {
                     throw new SQLException("Fehler beim Abrufen der generierten ID für DataValue.");
                 }
