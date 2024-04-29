@@ -19,7 +19,7 @@ public class RetrievalService {
             if (resultSet.next()) {
                 return resultSet.getInt("MaxCrawlerID");
             } else {
-                // If there are no records in the table yet
+              
                 return 0;
             }
         }
@@ -34,7 +34,7 @@ public class RetrievalService {
             if (resultSet.next()) {
                 return resultSet.getInt("MaxValueID") + 1;
             } else {
-                // If there are no records in the table yet
+              
                 return 0;
             }
         }

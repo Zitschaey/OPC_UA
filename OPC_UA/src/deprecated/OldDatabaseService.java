@@ -443,7 +443,7 @@ public class OldDatabaseService {
         int maxValueID;
         try (PreparedStatement statement = connection.prepareStatement(insertSql)) {
             maxValueID = RetrievalService.getNextDataValueID(connection) - 1;
-            statement.setInt(1, maxValueID); // Verwende die Methode, um die nächste verfügbare ID zu erhalten
+            statement.setInt(1, maxValueID);
             statement.setString(2, rawValue);
             statement.setString(3, null);
             statement.setBoolean(4, true);
