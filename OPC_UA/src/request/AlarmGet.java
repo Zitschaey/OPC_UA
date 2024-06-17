@@ -12,7 +12,7 @@ public class AlarmGet {
 	
 	public static void main(String[] args) {
 	
-	sendPostRequest(Stations.HL, "Der");
+//	sendPostRequest(Stations.HL, "Das ist ein Test");
 	System.out.println(getAlarms());
 	
 	}
