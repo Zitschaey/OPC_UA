@@ -131,12 +131,12 @@ public class DatabaseService {
 	}
 
 	public static void insertAlarms() {
-    	List<Alarm> alarms = AlarmMapper.mapJsonToAlarms(AlarmGet.getAlarms());
-        String insertSql = "INSERT INTO alarm (StationID, Fehlermeldung, ErrorCode, istAktiv, Datum) VALUES (?, ?, ?, ?, ?)";
-        String updateSql = "UPDATE alarm SET istAktiv = false, Dauer = ? WHERE AlarmID = ?";
+		 List<Alarm> alarms = AlarmMapper.mapJsonToAlarms(AlarmGet.getAlarms());
+	        String insertSql = "INSERT INTO alarm (StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum) VALUES (?, ?, ?, ?, ?)";
+	        String updateSql = "UPDATE alarm SET istAktiv = false, Enddatum = ?, Dauer = ? WHERE AlarmID = ?";
 
         try (Connection conn = DATABASE_CONNECTION_MANAGER.createConnection()) {
-        	   // Holen der existierenden Alarme
+        	 // Holen der existierenden Alarme
             Map<String, Alarm> existingAlarms = getActiveAlarms(conn);
 
             // Set to keep track of processed alarms
@@ -170,8 +170,9 @@ public class DatabaseService {
 
                                 System.out.println("Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID() + ", Dauer: " + dauerInMinuten + " Minuten");
 
-                                updateStmt.setInt(1, dauerInMinuten);
-                                updateStmt.setInt(2, existingAlarm.getAlarmID());
+                                updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
+                                updateStmt.setInt(2, dauerInMinuten);
+                                updateStmt.setInt(3, existingAlarm.getAlarmID());
                                 updateStmt.executeUpdate();
                             }
                         }
@@ -207,8 +208,9 @@ public class DatabaseService {
 
                         System.out.println("Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID() + ", Dauer: " + dauerInMinuten + " Minuten");
 
-                        updateStmt.setInt(1, dauerInMinuten);
-                        updateStmt.setInt(2, existingAlarm.getAlarmID());
+                        updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
+                        updateStmt.setInt(2, dauerInMinuten);
+                        updateStmt.setInt(3, existingAlarm.getAlarmID());
                         updateStmt.executeUpdate();
                     }
                 }
@@ -221,36 +223,36 @@ public class DatabaseService {
         }
     }
 
-	private static Map<String, Alarm> getActiveAlarms(Connection conn) throws SQLException {
-		String sql = "SELECT AlarmID, StationID, Fehlermeldung, ErrorCode, istAktiv, Datum FROM alarm WHERE istAktiv = true";
-		Map<String, Alarm> alarms = new HashMap<>();
+    private static Map<String, Alarm> getActiveAlarms(Connection conn) throws SQLException {
+        String sql = "SELECT AlarmID, StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum FROM alarm WHERE istAktiv = true";
+        Map<String, Alarm> alarms = new HashMap<>();
 
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			ResultSet rs = pstmt.executeQuery();
-			while (rs.next()) {
-				Alarm alarm = new Alarm();
-				alarm.setAlarmID(rs.getInt("AlarmID"));
-				alarm.setErrorMessage(rs.getString("Fehlermeldung"));
-				alarm.setErrorCode(rs.getInt("ErrorCode"));
-				alarm.setActive(rs.getBoolean("istAktiv"));
-				alarm.setDatum(rs.getTimestamp("Datum"));
-				alarm.setStation(getStationById(rs.getInt("StationID")));
-				alarms.put(generateKey(alarm), alarm);	
-			}
-		}
-		return alarms;
-	}
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Alarm alarm = new Alarm();
+                alarm.setAlarmID(rs.getInt("AlarmID"));
+                alarm.setErrorMessage(rs.getString("Fehlermeldung"));
+                alarm.setErrorCode(rs.getInt("ErrorCode"));
+                alarm.setActive(rs.getBoolean("istAktiv"));
+                alarm.setDatum(rs.getTimestamp("Startdatum"));
+                alarm.setStation(getStationById(rs.getInt("StationID")));
+                alarms.put(generateKey(alarm), alarm);
+            }
+        }
+        return alarms;
+    }
 
-	private static Stations getStationById(int stationID) {
-		for (Stations station : Stations.values()) {
-			if (station.getStationID() == stationID) {
-				return station;
-			}
-		}
-		return null; // oder wirf eine Ausnahme, falls die Station nicht gefunden wird
-	}
+    private static Stations getStationById(int stationID) {
+        for (Stations station : Stations.values()) {
+            if (station.getStationID() == stationID) {
+                return station;
+            }
+        }
+        return null; // oder wirf eine Ausnahme, falls die Station nicht gefunden wird
+    }
 
-	private static String generateKey(Alarm alarm) {
-		return alarm.getStation().getStationID() + "|" + alarm.getErrorMessage() + "|" + alarm.getErrorCode();
-	}
+    private static String generateKey(Alarm alarm) {
+        return alarm.getStation().getStationID() + "|" + alarm.getErrorMessage() + "|" + alarm.getErrorCode();
+    }
 }

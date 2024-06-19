@@ -12,7 +12,7 @@ public class AlarmGet {
 	
 	public static void main(String[] args) {
 	
-//	sendPostRequest(Stations.HL, "Das ist ein Test");
+	//sendPostRequest(Stations.HL, "BLM ist zurück", "200");
 	System.out.println(getAlarms());
 	
 	}
@@ -58,7 +58,7 @@ public class AlarmGet {
 	
 	
 
-		 public static boolean sendPostRequest(Stations station, String fehlermeldung) {
+		 public static boolean sendPostRequest(Stations station, String fehlermeldung, String errorCode) {
 		        try {
 		            // Die URL, zu der die POST-Anfrage gesendet wird
 		            String urlString = "http://10.3.0.71:8080/mhubx-cc/module/juwi/action?page=Logic.Interface&name=postAlarm";
@@ -77,7 +77,7 @@ System.out.println(station.getStation().getID());
 		                    + "\"source\": {\"id\":\"cps1;" + station.getStation().getShort() + "\"},"
 		                    + "\"type\":\"module\","
 		                    + "\"severity\":\"error\","
-		                    + "\"code\": \"2\","
+		                    + "\"code\": \"" + errorCode +"\""+ ","
 		                    + "\"text\": \"" + escapeJsonString(fehlermeldung) + "\""
 		                    + "}";
 
