@@ -12,8 +12,12 @@ public class AlarmGet {
 	
 	public static void main(String[] args) {
 	
-	//sendPostRequest(Stations.HL, "BLM ist zurück", "200");
-	System.out.println(getAlarms());
+sendPostRequest(Stations.BF, "Color missing", "404");
+//sendPostRequest(Stations.HL, "Palete not placed in right direction", "102");
+// sendPostRequest(Stations.PL, "Clinton ist bald zurück", "200");
+//sendPostRequest(Stations.PR, "Broken sensor", "505");
+//sendPostRequest(Stations.RI, "Test error", "700");
+	// System.out.println(getAlarms());
 	
 	}
 	

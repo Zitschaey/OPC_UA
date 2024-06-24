@@ -91,7 +91,6 @@ public class DatabaseService {
 		var insertSql = "INSERT INTO datavalue (Rohwert, BerechneterWert, Valid) VALUES (?, ?, ?)";
 
 		var filteredValue = FILTER_SERVICE.filterDataValue(rawValue);
-
 		var maxValueID = -1;
 		try (PreparedStatement statement = connection.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
 			statement.setString(1, filteredValue);
@@ -101,6 +100,7 @@ public class DatabaseService {
 
 			try (var generatedKeys = statement.getGeneratedKeys()) {
 				if (generatedKeys.next()) {
+
 					maxValueID = generatedKeys.getInt(1);
 				} else {
 					throw new SQLException("Fehler beim Abrufen der generierten ID für DataValue.");
@@ -131,128 +131,144 @@ public class DatabaseService {
 	}
 
 	public static void insertAlarms() {
-		 List<Alarm> alarms = AlarmMapper.mapJsonToAlarms(AlarmGet.getAlarms());
-	        String insertSql = "INSERT INTO alarm (StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum) VALUES (?, ?, ?, ?, ?)";
-	        String updateSql = "UPDATE alarm SET istAktiv = false, Enddatum = ?, Dauer = ? WHERE AlarmID = ?";
+		List<Alarm> alarms = AlarmMapper.mapJsonToAlarms(AlarmGet.getAlarms());
+		String insertSql = "INSERT INTO alarm (StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum) VALUES (?, ?, ?, ?, ?)";
+		String updateSql = "UPDATE alarm SET istAktiv = false, Enddatum = ?, Dauer = ? WHERE AlarmID = ?";
 
-        try (Connection conn = DATABASE_CONNECTION_MANAGER.createConnection()) {
-        	 // Holen der existierenden Alarme
-            Map<String, Alarm> existingAlarms = getActiveAlarms(conn);
+		try (Connection conn = DATABASE_CONNECTION_MANAGER.createConnection()) {
+			// Holen der existierenden Alarme
+			Map<String, Alarm> existingAlarms = getActiveAlarms(conn);
 
-            // Set to keep track of processed alarms
-            Map<String, Alarm> processedAlarms = new HashMap<>();
+			// Set to keep track of processed alarms
+			Map<String, Alarm> processedAlarms = new HashMap<>();
 
-            for (Alarm alarm : alarms) {
-                String key = generateKey(alarm);
+			for (Alarm alarm : alarms) {
+				String key = generateKey(alarm);
 
-                System.out.println("Überprüfe Alarm: " + alarm.getErrorMessage() + " mit Key: " + key);
+				System.out.println("Überprüfe Alarm: " + alarm.getErrorMessage() + " mit Key: " + key);
 
-                if (existingAlarms.containsKey(key) && existingAlarms.get(key).isActive() == alarm.isActive()) {
-                    System.out.println("Der Alarm mit Fehlermeldung '" + alarm.getErrorMessage() + "', Error Code '" +
-                            alarm.getErrorCode() + "' und Station ID '" + alarm.getStation().getStationID() +
-                            "' ist bereits vorhanden und aktiv.");
-                    processedAlarms.put(key, existingAlarms.get(key)); // Mark as processed
-                } else {
-                    try (PreparedStatement insertStmt = conn.prepareStatement(insertSql);
-                         PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+				if (existingAlarms.containsKey(key) && existingAlarms.get(key).isActive() == alarm.isActive()) {
+					System.out.println("Der Alarm mit Fehlermeldung '" + alarm.getErrorMessage() + "', Error Code '"
+							+ alarm.getErrorCode() + "' und Station ID '" + alarm.getStation().getStationID()
+							+ "' ist bereits vorhanden und aktiv.");
+					processedAlarms.put(key, existingAlarms.get(key)); // Mark as processed
+				} else {
+					try (PreparedStatement insertStmt = conn.prepareStatement(insertSql);
+							PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
 
-                        conn.setAutoCommit(false); // Start transaction
+						conn.setAutoCommit(false); // Start transaction
 
-                        // Deaktivieren bestehender Alarme mit der gleichen StationID
-                        for (Alarm existingAlarm : existingAlarms.values()) {
-                            if (existingAlarm.getStation().getStationID() == alarm.getStation().getStationID()) {
-                                // Berechne die Dauer
-                                LocalDateTime startTime = existingAlarm.getDatum().toInstant()
-                                        .atZone(ZoneId.systemDefault()).toLocalDateTime();
-                                LocalDateTime endTime = LocalDateTime.now();
-                                Duration duration = Duration.between(startTime, endTime);
-                                int dauerInMinuten = (int) duration.toMinutes();
+						// Deaktivieren bestehender Alarme mit der gleichen StationID
+						for (Alarm existingAlarm : existingAlarms.values()) {
+							if (existingAlarm.getStation().getStationID() == alarm.getStation().getStationID()) {
+								// Berechne die Dauer
+								LocalDateTime startTime = existingAlarm.getDatum().toInstant()
+										.atZone(ZoneId.systemDefault()).toLocalDateTime();
+								LocalDateTime endTime = LocalDateTime.now();
+								Duration duration = Duration.between(startTime, endTime);
 
-                                System.out.println("Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID() + ", Dauer: " + dauerInMinuten + " Minuten");
+								// Berechne die Stunden, Minuten und Sekunden
+								long hours = duration.toHours();
+								long minutes = duration.toMinutes() % 60;
+								long seconds = duration.getSeconds() % 60;
 
-                                updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
-                                updateStmt.setInt(2, dauerInMinuten);
-                                updateStmt.setInt(3, existingAlarm.getAlarmID());
-                                updateStmt.executeUpdate();
-                            }
-                        }
+								// Erstelle eine Time-Dauer aus den berechneten Stunden, Minuten und Sekunden
+								Time dauer = Time.valueOf(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-                        // Einfügen des neuen Alarms
-                        insertStmt.setInt(1, alarm.getStation().getStationID());
-                        insertStmt.setString(2, alarm.getErrorMessage());
-                        insertStmt.setInt(3, alarm.getErrorCode());
-                        insertStmt.setBoolean(4, alarm.isActive());
-                        insertStmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
-                        insertStmt.executeUpdate();
+								System.out.println("Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID()
+										+ ", Dauer: " + dauer);
 
-                        conn.commit(); // Transaktion abschließen
+								updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
+								updateStmt.setTime(2, dauer);
+								updateStmt.setInt(3, existingAlarm.getAlarmID());
+								updateStmt.executeUpdate();
+							}
+						}
 
-                        processedAlarms.put(key, alarm); // Mark as processed
-                    } catch (SQLException e) {
-                        conn.rollback(); // Transaktion rückgängig machen bei einem Fehler
-                        e.printStackTrace();
-                    }
-                }
-            }
+						// Einfügen des neuen Alarms
+						insertStmt.setInt(1, alarm.getStation().getStationID());
+						insertStmt.setString(2, alarm.getErrorMessage());
+						insertStmt.setInt(3, alarm.getErrorCode());
+						insertStmt.setBoolean(4, alarm.isActive());
+						insertStmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+						insertStmt.executeUpdate();
 
-            // Deactivate alarms that are in the database but not in the new list
-            try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
-                for (Map.Entry<String, Alarm> entry : existingAlarms.entrySet()) {
-                    if (!processedAlarms.containsKey(entry.getKey())) {
-                        Alarm existingAlarm = entry.getValue();
-                        LocalDateTime startTime = existingAlarm.getDatum().toInstant()
-                                .atZone(ZoneId.systemDefault()).toLocalDateTime();
-                        LocalDateTime endTime = LocalDateTime.now();
-                        Duration duration = Duration.between(startTime, endTime);
-                        int dauerInMinuten = (int) duration.toMinutes();
+						conn.commit(); // Transaktion abschließen
 
-                        System.out.println("Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID() + ", Dauer: " + dauerInMinuten + " Minuten");
+						processedAlarms.put(key, alarm); // Mark as processed
+					} catch (SQLException e) {
+						conn.rollback(); // Transaktion rückgängig machen bei einem Fehler
+						e.printStackTrace();
+					}
+				}
+			}
 
-                        updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
-                        updateStmt.setInt(2, dauerInMinuten);
-                        updateStmt.setInt(3, existingAlarm.getAlarmID());
-                        updateStmt.executeUpdate();
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+			// Deactivate alarms that are in the database but not in the new list
+			try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+				for (Map.Entry<String, Alarm> entry : existingAlarms.entrySet()) {
+					if (!processedAlarms.containsKey(entry.getKey())) {
+						Alarm existingAlarm = entry.getValue();
+						LocalDateTime startTime = existingAlarm.getDatum().toInstant().atZone(ZoneId.systemDefault())
+								.toLocalDateTime();
+						LocalDateTime endTime = LocalDateTime.now();
+						Duration duration = Duration.between(startTime, endTime);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+						// Berechne die Stunden, Minuten und Sekunden
+						long hours = duration.toHours();
+						long minutes = duration.toMinutes() % 60;
+						long seconds = duration.getSeconds() % 60;
 
-    private static Map<String, Alarm> getActiveAlarms(Connection conn) throws SQLException {
-        String sql = "SELECT AlarmID, StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum FROM alarm WHERE istAktiv = true";
-        Map<String, Alarm> alarms = new HashMap<>();
+						// Erstelle eine Time-Dauer aus den berechneten Stunden, Minuten und Sekunden
+						Time dauer = Time.valueOf(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Alarm alarm = new Alarm();
-                alarm.setAlarmID(rs.getInt("AlarmID"));
-                alarm.setErrorMessage(rs.getString("Fehlermeldung"));
-                alarm.setErrorCode(rs.getInt("ErrorCode"));
-                alarm.setActive(rs.getBoolean("istAktiv"));
-                alarm.setDatum(rs.getTimestamp("Startdatum"));
-                alarm.setStation(getStationById(rs.getInt("StationID")));
-                alarms.put(generateKey(alarm), alarm);
-            }
-        }
-        return alarms;
-    }
+						System.out.println(
+								"Deaktiviere alten Alarm mit ID: " + existingAlarm.getAlarmID() + ", Dauer: " + dauer);
 
-    private static Stations getStationById(int stationID) {
-        for (Stations station : Stations.values()) {
-            if (station.getStationID() == stationID) {
-                return station;
-            }
-        }
-        return null; // oder wirf eine Ausnahme, falls die Station nicht gefunden wird
-    }
+						updateStmt.setTimestamp(1, Timestamp.valueOf(endTime));
+						updateStmt.setTime(2, dauer);
+						updateStmt.setInt(3, existingAlarm.getAlarmID());
+						updateStmt.executeUpdate();
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
-    private static String generateKey(Alarm alarm) {
-        return alarm.getStation().getStationID() + "|" + alarm.getErrorMessage() + "|" + alarm.getErrorCode();
-    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static Map<String, Alarm> getActiveAlarms(Connection conn) throws SQLException {
+		String sql = "SELECT AlarmID, StationID, Fehlermeldung, ErrorCode, istAktiv, Startdatum FROM alarm WHERE istAktiv = true";
+		Map<String, Alarm> alarms = new HashMap<>();
+
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				Alarm alarm = new Alarm();
+				alarm.setAlarmID(rs.getInt("AlarmID"));
+				alarm.setErrorMessage(rs.getString("Fehlermeldung"));
+				alarm.setErrorCode(rs.getInt("ErrorCode"));
+				alarm.setActive(rs.getBoolean("istAktiv"));
+				alarm.setDatum(rs.getTimestamp("Startdatum"));
+				alarm.setStation(getStationById(rs.getInt("StationID")));
+				alarms.put(generateKey(alarm), alarm);
+			}
+		}
+		return alarms;
+	}
+
+	private static Stations getStationById(int stationID) {
+		for (Stations station : Stations.values()) {
+			if (station.getStationID() == stationID) {
+				return station;
+			}
+		}
+		return null; // oder wirf eine Ausnahme, falls die Station nicht gefunden wird
+	}
+
+	private static String generateKey(Alarm alarm) {
+		return alarm.getStation().getStationID() + "|" + alarm.getErrorMessage() + "|" + alarm.getErrorCode();
+	}
 }

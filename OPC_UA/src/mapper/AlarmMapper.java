@@ -11,12 +11,20 @@ public class AlarmMapper {
 	public static List<Alarm> mapJsonToAlarms(String jsonString) {
         List<Alarm> alarms = new ArrayList<>();
         
+        if (jsonString == null || jsonString.trim().isEmpty()) {
+            throw new IllegalArgumentException("Der JSON-String ist leer.");
+        }
+
         try {
             // Entfernen der äußeren geschweiften Klammern
             jsonString = jsonString.substring(1, jsonString.length() - 1);
 
             // Aufteilen des JSON-Strings anhand des Schlüssels "alarms"
             String[] parts = jsonString.split("\"alarms\":\\[");
+            if (parts.length < 2) {
+                throw new IllegalArgumentException("Ungültiges JSON-Format: Der Schlüssel 'alarms' wurde nicht gefunden.");
+            }
+
             String alarmsArray = parts[1];
 
             // Entfernen der abschließenden Klammer des Arrays
@@ -55,6 +63,8 @@ public class AlarmMapper {
                 }
             }
 
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Ungültiges JSON-Format: Es fehlt eine erwartete Komponente.", e);
         } catch (Exception e) {
             e.printStackTrace();
         }
